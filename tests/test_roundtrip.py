@@ -63,11 +63,11 @@ def test_property_roundtrip():
     from hypothesis import given, settings
     from hypothesis import strategies as st
 
-    from tests.conftest import ASCII_CORPUS
+    from tests.conftest import COMPRESSION_CORPUS
     from tokenizer import Tokenizer
 
     tok = Tokenizer()
-    tok.train(ASCII_CORPUS, VOCAB_SIZE)
+    tok.train(COMPRESSION_CORPUS, VOCAB_SIZE)
 
     @given(st.text())
     @settings(max_examples=200, deadline=None)

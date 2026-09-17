@@ -26,9 +26,9 @@ def test_save_load_preserves_decoding(trained, tmp_path):
         assert restored.decode(ids) == trained.decode(ids)
 
 
-def test_save_is_deterministic(ascii_corpus, tmp_path):
+def test_save_is_deterministic(compression_corpus, tmp_path):
     a = Tokenizer()
-    a.train(ascii_corpus, VOCAB_SIZE)
+    a.train(compression_corpus, VOCAB_SIZE)
     a.save(str(tmp_path / "one"))
     a.save(str(tmp_path / "two"))
 

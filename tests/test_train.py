@@ -21,12 +21,12 @@ def test_vocab_size_exactly_256_is_legal(ascii_corpus):
     assert t.encode(s) == list(s.encode("utf-8"))
 
 
-def test_vocab_size_is_respected_exactly(ascii_corpus):
+def test_vocab_size_is_respected_exactly(compression_corpus):
     """Every id produced must fall inside the requested vocabulary."""
     for size in (256, 280, 320, 400):
         t = Tokenizer()
-        t.train(ascii_corpus, size)
-        ids = t.encode(ascii_corpus[:2000])
+        t.train(compression_corpus, size)
+        ids = t.encode(compression_corpus[:2000])
         assert max(ids) < size
         assert min(ids) >= 0
 
@@ -67,19 +67,27 @@ def test_vocab_size_is_exact(compression_corpus):
 def test_merge_exhaustion_behaviour(ascii_corpus):
     """What does train() owe when the corpus runs out of pairs to merge?
 
-    ASCII_CORPUS has 24 distinct bigrams and collapses to one token after
-    ~90 merges. Asking for 600 is asking for merges that do not exist.
+    ASCII_CORPUS is one sentence repeated. With merges confined to
+    pre-tokenized chunks (ADR-0005) its handful of word types support only
+    19 merges; asking for more is asking for merges that do not exist.
 
-    Raise? Stop early and expose a smaller vocab_size? Pad with unused
-    tokens? All three are defensible. Decide, write ADR-0003, then replace
-    this skip with the assertion.
+    ADR-0003: raise. Silently returning a smaller vocabulary breaks the
+    `self.vocab_size == vocab_size` promise, and padding wastes embedding
+    parameters (ADR-0001). Measured ceiling: 19 merges (was 48 before
+    pre-tokenization, when merges could cross word boundaries).
     """
     import pytest
-    pytest.skip("pin this once ADR-0003 (merge exhaustion) is written")
+
+    t = Tokenizer()
+    t.train(ascii_corpus, 275)          # exactly at the ceiling
+    assert t.vocab_size == 275
+
+    with pytest.raises(ValueError, match="exhausted"):
+        Tokenizer().train(ascii_corpus, 276)
 
 
-def test_verbose_does_not_change_result(ascii_corpus):
+def test_verbose_does_not_change_result(compression_corpus):
     a, b = Tokenizer(), Tokenizer()
-    a.train(ascii_corpus, VOCAB_SIZE, verbose=False)
-    b.train(ascii_corpus, VOCAB_SIZE, verbose=True)
-    assert a.encode(ascii_corpus[:500]) == b.encode(ascii_corpus[:500])
+    a.train(compression_corpus, VOCAB_SIZE, verbose=False)
+    b.train(compression_corpus, VOCAB_SIZE, verbose=True)
+    assert a.encode(compression_corpus[:500]) == b.encode(compression_corpus[:500])

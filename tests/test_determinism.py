@@ -15,10 +15,10 @@ def _encode_fingerprint(tok, probes):
 PROBES = ["the cat sat on the mat", "a rat ate a hat", "ABCDABCD"]
 
 
-def test_training_is_deterministic(ascii_corpus):
+def test_training_is_deterministic(compression_corpus):
     a, b = Tokenizer(), Tokenizer()
-    a.train(ascii_corpus, VOCAB_SIZE)
-    b.train(ascii_corpus, VOCAB_SIZE)
+    a.train(compression_corpus, VOCAB_SIZE)
+    b.train(compression_corpus, VOCAB_SIZE)
     assert _encode_fingerprint(a, PROBES) == _encode_fingerprint(b, PROBES)
 
 
@@ -38,14 +38,18 @@ def test_deterministic_under_frequency_tie(tie_corpus):
 
 
 def test_tie_break_rule_is_pinned(tie_corpus):
-    """Characterisation test — fill in once the rule is chosen.
+    """Characterisation test for ADR-0002.
 
-    Decide your tie-break rule, write it into docs/adr/, then replace the
-    skip below with the concrete expected encoding. Until then this is the
-    one test allowed to be pending.
+    The rule: highest count, then the lexicographically SMALLEST pair.
+    TIE_CORPUS gives (65,66)="AB" and (67,68)="CD" 50 occurrences each, so
+    "AB" must win id 256 and "CD" must take 257. If the tie-break ever
+    changes, this test is what notices.
     """
-    import pytest
-    pytest.skip("pin this once ADR-0002 (tie-break rule) is written")
+    t = Tokenizer()
+    t.train(tie_corpus, 258)
+    assert t.encode("ABCD") == [256, 257]
+    assert t.encode("ABAB") == [256, 256]
+    assert t.encode("CDCD") == [257, 257]
 
 
 def test_encoding_is_stable_across_calls(trained):

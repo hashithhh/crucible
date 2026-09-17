@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "crucible-tokenizer"
 version = "0.1.0"
 description = "Byte-level BPE tokenizer written from scratch — Crucible Phase 1"
-requires-python = ">=3.10"
+requires-python = ">=3.11"  # possessive quantifiers in re (ADR-0005)
 dependencies = []          # stdlib only, deliberately
 license = "Apache-2.0"
 license-files = ["LICENSE"]
@@ -22,6 +22,7 @@ dev = [
 
 [tool.setuptools]
 py-modules = ["tokenizer"]   # flat layout; don't let auto-discovery guess
+packages = ["crucible"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -42,7 +43,7 @@ ignore_patterns = ["*.venv*"]
 
 [tool.ruff]
 line-length = 88
-target-version = "py310"
+target-version = "py311"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]

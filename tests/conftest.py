@@ -43,6 +43,11 @@ ROUNDTRIP_CASES = [
 
 VOCAB_SIZE = 320  # 256 bytes + 64 learned merges; small enough to be fast
 
+# UNICODE_CORPUS supports only 60 merges once merges are confined to
+# pre-tokenized chunks (ADR-0003, ADR-0005), so it cannot reach VOCAB_SIZE.
+# 300 = 44 merges, still enough to learn multi-byte CJK and emoji tokens.
+UNICODE_VOCAB_SIZE = 300
+
 
 @pytest.fixture
 def ascii_corpus():
@@ -65,11 +70,17 @@ def tie_corpus():
 
 
 @pytest.fixture
-def trained(ascii_corpus):
-    """A tokenizer trained on the ASCII corpus at VOCAB_SIZE."""
+def trained(compression_corpus):
+    """A tokenizer trained at VOCAB_SIZE on the lexically varied corpus.
+
+    NOT ASCII_CORPUS: that one is a single sentence repeated and supports
+    only 19 merges before it runs out of pairs (ADR-0003), which is fewer
+    than VOCAB_SIZE asks for. It is kept for the 256 and exhaustion cases,
+    where its thinness is the point.
+    """
     from tokenizer import Tokenizer
     t = Tokenizer()
-    t.train(ascii_corpus, VOCAB_SIZE)
+    t.train(compression_corpus, VOCAB_SIZE)
     return t
 
 
@@ -77,5 +88,5 @@ def trained(ascii_corpus):
 def trained_unicode(unicode_corpus):
     from tokenizer import Tokenizer
     t = Tokenizer()
-    t.train(unicode_corpus, VOCAB_SIZE)
+    t.train(unicode_corpus, UNICODE_VOCAB_SIZE)
     return t

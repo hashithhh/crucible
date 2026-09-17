@@ -1,0 +1,41 @@
+{
+  "knee_vocab_size": 2048,
+  "knee_method": "max distance above endpoint chord, (log2 vocab, bytes/token), measured grid sizes",
+  "merge_ceiling": 13887,
+  "ceiling_vocab_size": 14143,
+  "constants": {
+    "vocab_sizes": [
+      512,
+      1024,
+      2048,
+      4096,
+      8192,
+      16384,
+      32768
+    ],
+    "train_bytes_budget": 5000000,
+    "heldout_bytes_budget": 500000,
+    "d_model": 768,
+    "param_budget": 100000000,
+    "timing_repeats": 3
+  },
+  "corpus": {
+    "corpus_file": "TinyStories-valid.txt",
+    "corpus_sha256": "94e431816c4cce81ff71e4408ff8d3bda9a42e8d2663986697c3954288cb38b4",
+    "stories_total": 21989,
+    "train_stories": 6101,
+    "train_bytes": 4999982,
+    "heldout_stories": 574,
+    "heldout_bytes": 499260,
+    "heldout_first_story_index": 21415
+  },
+  "hardware": {
+    "cpu": "AMD Ryzen 7 7735HS with Radeon Graphics",
+    "logical_cpus": 16,
+    "ram_gb": 15.3,
+    "os": "Windows-11-10.0.26200-SP0",
+    "python": "3.13.5",
+    "threads_used": 1
+  },
+  "date": "2026-09-17"
+}
