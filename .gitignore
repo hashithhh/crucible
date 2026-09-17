@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.hypothesis/
+.ruff_cache/
+.venv/
+*.egg-info/
+
+# trained tokenizer artifacts
+*.model
+*.vocab
+
+# data and generated output
+data/
+figures/
+crucible_feasibility.json
