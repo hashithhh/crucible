@@ -55,6 +55,11 @@ class Tokenizer:
             raise ValueError(
                 f"vocab_size must be at least 256 (the raw bytes), got {vocab_size}"
             )
+        if vocab_size == 256:
+            # Degenerate case: the vocabulary is exactly the 256 raw bytes,
+            # so there is nothing to learn. No merges, no state.
+            return
+        # Everything above 256 needs the merge loop. Not written yet.
         raise NotImplementedError
 
     def encode(self, text: str) -> list[int]:
@@ -67,7 +72,9 @@ class Tokenizer:
         - `encode("")` returns `[]`.
         - Deterministic.
         """
-        raise NotImplementedError
+        # Base case only: no merges have been learned, so a token IS a byte.
+        # Once train() learns merges, this must apply them to these ids.
+        return list(text.encode("utf-8"))
 
     def decode(self, ids: list[int]) -> str:
         """Decode token ids back to text.
@@ -80,7 +87,13 @@ class Tokenizer:
           the error policy is your choice, but it must be DOCUMENTED in an
           ADR and pinned by test_decode_invalid_utf8_policy.
         """
-        raise NotImplementedError
+        # NOTE: hardcoded to 256 because no merges exist yet. This bound must
+        # become self.vocab_size once train() learns any.
+        for i in ids:
+            if not 0 <= i < 256:
+                raise ValueError(f"token id {i} is outside the vocabulary")
+        # Invalid-UTF-8 policy: replace. Provisional — needs ADR-0004.
+        return bytes(ids).decode("utf-8", errors="replace")
 
     def save(self, prefix: str) -> None:
         """Persist the tokenizer to `{prefix}.model` (and any sidecar files).
