@@ -2,6 +2,25 @@
 
 import pytest
 
+
+def pytest_addoption(parser):
+    parser.addoption(
+        "--runslow",
+        action="store_true",
+        default=False,
+        help="also run tests marked slow (e.g. the corpus-wide round-trip)",
+    )
+
+
+def pytest_collection_modifyitems(config, items):
+    """Skip @pytest.mark.slow tests unless --runslow is given."""
+    if config.getoption("--runslow"):
+        return
+    skip_slow = pytest.mark.skip(reason="slow; run with --runslow")
+    for item in items:
+        if "slow" in item.keywords:
+            item.add_marker(skip_slow)
+
 ASCII_CORPUS = (
     "the cat sat on the mat. the cat ate the rat. "
     "a rat sat on a hat. the hat sat on the cat. "

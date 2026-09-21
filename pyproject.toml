@@ -28,6 +28,9 @@ packages = ["crucible"]
 testpaths = ["tests"]
 pythonpath = ["."]
 addopts = "-ra --strict-markers"
+markers = [
+    "slow: long-running; skipped unless --runslow (see tests/conftest.py)",
+]
 
 # `ptw` settings. The target test is passed on the command line by
 # scripts/watch.ps1, not here: config runner_args and CLI args are appended,
