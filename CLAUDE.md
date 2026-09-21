@@ -46,4 +46,7 @@ What this changes, concretely:
    `results/vocab_sweep.png`.
 4. ~~Differential check against `minbpe`~~ **dropped** — see Authorship.
    Replaced by: read `minbpe` and `tiktoken`, record the differences.
+   minbpe **done 2026-09-22** — `docs/minbpe-differences.md` (commit 1acefe8).
+   tiktoken compared by measurement (C1, `results/c1_tiktoken.md`); its
+   source has not been read.
 5. A public writeup with those numbers, stating how the code was produced.

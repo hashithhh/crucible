@@ -12,7 +12,10 @@ Vocabulary size is decided: **2,048** (3.73 bytes/token held-out, 1.57M
 embedding parameters at d_model=768). See ADR-0001 and
 `results/vocab_sweep.png`; regenerate with `python scripts/sweep_vocab.py`.
 
-Remaining in Phase 1: the `minbpe`/`tiktoken` reading pass, and the writeup.
+Compared against tiktoken (C1, `results/c1_tiktoken.md`) and minbpe
+(`docs/minbpe-differences.md`).
+
+Remaining in Phase 1: reading tiktoken's source, and the writeup.
 
 ## Run the tests
 

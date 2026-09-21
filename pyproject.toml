@@ -19,6 +19,8 @@ dev = [
     "matplotlib>=3.8",
     "pytest-watcher>=0.6",
 ]
+# scripts/compare_tiktoken.py only (C1); not needed by tokenizer.py or tests
+compare = ["tiktoken>=0.14"]
 
 [tool.setuptools]
 py-modules = ["tokenizer"]   # flat layout; don't let auto-discovery guess

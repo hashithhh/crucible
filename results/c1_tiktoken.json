@@ -1,0 +1,107 @@
+{
+  "c1": {
+    "reference": "cl100k_base",
+    "metric": "extra tokens for the same text vs reference",
+    "target_within": 0.1,
+    "kill_above": 0.3,
+    "ours_extra_tokens": 0.1359,
+    "verdict_as_specified": "misses target, above kill threshold"
+  },
+  "rows": [
+    {
+      "tokenizer": "crucible",
+      "kind": "ours, ADR-0001",
+      "vocab_size": 2048,
+      "tokens": 134000,
+      "bytes_per_token": 3.7258,
+      "encode_seconds_median": 1.5145,
+      "encode_seconds_runs": [
+        1.438,
+        1.5145,
+        1.3882,
+        1.6743,
+        1.7926
+      ],
+      "encode_mb_per_s": 0.33,
+      "encode_mtokens_per_s": 0.088,
+      "extra_tokens_vs_cl100k": 0.1359,
+      "vocab_ratio_vs_ours": 1.0
+    },
+    {
+      "tokenizer": "crucible",
+      "kind": "ours, sample ceiling (context only)",
+      "vocab_size": 14143,
+      "tokens": 116355,
+      "bytes_per_token": 4.2908,
+      "encode_seconds_median": 1.4243,
+      "encode_seconds_runs": [
+        1.4243,
+        1.4274,
+        1.5297,
+        1.4099,
+        1.4182
+      ],
+      "encode_mb_per_s": 0.351,
+      "encode_mtokens_per_s": 0.082,
+      "extra_tokens_vs_cl100k": -0.0137,
+      "vocab_ratio_vs_ours": 6.9
+    },
+    {
+      "tokenizer": "cl100k_base",
+      "kind": "tiktoken, pretrained",
+      "vocab_size": 100277,
+      "tokens": 117971,
+      "bytes_per_token": 4.2321,
+      "encode_seconds_median": 0.0746,
+      "encode_seconds_runs": [
+        0.0746,
+        0.0807,
+        0.0726,
+        0.0708,
+        0.075
+      ],
+      "encode_mb_per_s": 6.694,
+      "encode_mtokens_per_s": 1.582,
+      "extra_tokens_vs_cl100k": 0.0,
+      "vocab_ratio_vs_ours": 49.0
+    },
+    {
+      "tokenizer": "o200k_base",
+      "kind": "tiktoken, pretrained",
+      "vocab_size": 200019,
+      "tokens": 117113,
+      "bytes_per_token": 4.2631,
+      "encode_seconds_median": 0.0445,
+      "encode_seconds_runs": [
+        0.0479,
+        0.0468,
+        0.0445,
+        0.042,
+        0.0424
+      ],
+      "encode_mb_per_s": 11.227,
+      "encode_mtokens_per_s": 2.634,
+      "extra_tokens_vs_cl100k": -0.0073,
+      "vocab_ratio_vs_ours": 97.7
+    }
+  ],
+  "heldout": {
+    "heldout_bytes": 499260,
+    "heldout_stories": 574
+  },
+  "corpus": {
+    "corpus_file": "TinyStories-valid.txt",
+    "corpus_sha256": "94e431816c4cce81ff71e4408ff8d3bda9a42e8d2663986697c3954288cb38b4"
+  },
+  "tiktoken_version": "0.14.0",
+  "hardware": {
+    "cpu": "AMD Ryzen 7 7735HS with Radeon Graphics",
+    "logical_cpus": 16,
+    "ram_gb": 15.3,
+    "os": "Windows-11-10.0.26200-SP0",
+    "python": "3.13.5",
+    "threads_used": 1
+  },
+  "python": "3.13.5",
+  "date": "2026-09-22"
+}
