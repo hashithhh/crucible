@@ -40,6 +40,7 @@ pytest
 | 0003 | Merge exhaustion | accepted — raise ValueError |
 | 0004 | Invalid UTF-8 on decode | accepted — errors="replace" |
 | 0005 | Pre-tokenization pattern | accepted — GPT-4 (cl100k), translated to stdlib `re` |
+| 0006 | Model size and data | accepted — ~25M (S25: d512, 8 layers, 8 heads) on TinyStories only |
 
 ## Rules
 
