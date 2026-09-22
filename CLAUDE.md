@@ -1,7 +1,8 @@
 # Crucible — operating rules for this repo
 
-Crucible is a ~100M-parameter LLM trained from scratch. Phase 1 is the
-byte-level BPE tokenizer.
+Crucible is a ~25M-parameter LLM trained from scratch (ADR-0006; the target
+was ~100M until the data budget was measured). Phase 1 is the byte-level BPE
+tokenizer.
 
 ## Authorship — read this first
 

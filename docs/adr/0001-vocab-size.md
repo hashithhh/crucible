@@ -3,6 +3,35 @@
 - **Status:** accepted
 - **Date:** 2026-09-16 (proposed), 2026-09-17 (decided from measurement)
 
+## Amendment, 2026-09-22 — the parameter percentages used a superseded budget
+
+Everything below is left as written on 2026-09-17. One input has since
+changed: this ADR costed the vocabulary against a ~100M-parameter model at
+`d_model=768`, and **ADR-0006 replaced that with ~25M at `d_model=512`**
+(S25: 26,223,616 parameters). Every "% of budget" figure below is therefore
+stale. Corrected:
+
+| Vocab | Embedding params | Was (100M, d=768) | Now (25M, d=512) | Share of the actual S25 model |
+|---:|---:|---:|---:|---:|
+| 2,048 | 1,049,088 | 1.57% (1,572,864 params) | **4.20%** | 4.00% |
+| 4,096 | 2,097,664 | 3.15% (3,145,728 params) | **8.39%** | 7.69% |
+
+The "Now" column uses the round 25M, for comparability with the old figures;
+the last column divides by each model's own total, which is how ADR-0006
+quotes them (4.0% and 7.7%).
+
+**The decision does not change, and the reasoning behind it gets stronger.**
+The secondary argument here was that the choice between 2,048 and 4,096 was
+cheap: ~1.6 points of the parameter budget. Under ADR-0006 the same step
+costs 1,048,576 parameters, **4.2 points of a 25M budget**: the parameter
+cost of a larger vocabulary is now **2.7x more significant** (4.20% against
+1.57%; 2.5x measured against each model's own total). That argues for the
+smaller vocabulary, which is what was chosen.
+
+The primary argument, the training-token budget, moved the other way and is
+weaker. ADR-0006's Consequences section records it: 510.5M tokens is 97% of
+the Chinchilla target for 25M, and 4,096's 466.6M is 89%.
+
 ## Context
 Vocabulary size is not a tokenizer-local choice. The embedding table is
 `vocab_size x d_model` parameters, and at `d_model=768` a GPT-2-sized 50,257
