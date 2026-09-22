@@ -1,21 +1,26 @@
 # Crucible — Phase 1: BPE Tokenizer
 
-Rung 1 of the Crucible ladder: a ~100M-parameter LLM trained from scratch.
+Rung 1 of the Crucible ladder: a ~25M-parameter LLM trained from scratch.
 This phase is a byte-level BPE tokenizer, standard library only.
+
+The target was ~100M until ADR-0006 (2026-09-22): TinyStories supplies 510M
+unique tokens, which at ~20 tokens/parameter supports ~25M, not 100M.
 
 ## Status
 
-Phase 1 of 5 — **102/102 green** as of 2026-09-17. Tokenizer implementation
-written by Claude, not hand-written; see `CLAUDE.md` for what that changes.
+Phase 1 of 5 — **103/103 green** as of 2026-09-22, including the corpus-wide
+round-trip over all 21,990 stories (`pytest --runslow`, 52 s; the default run
+skips it and reports 102 passed, 1 skipped). Tokenizer implementation written
+by Claude, not hand-written; see `CLAUDE.md` for what that changes.
 
-Vocabulary size is decided: **2,048** (3.73 bytes/token held-out, 1.57M
-embedding parameters at d_model=768). See ADR-0001 and
+Vocabulary size is decided: **2,048** (3.73 bytes/token held-out, 1.05M
+embedding parameters at ADR-0006's d_model=512). See ADR-0001 and
 `results/vocab_sweep.png`; regenerate with `python scripts/sweep_vocab.py`.
 
-Compared against tiktoken (C1, `results/c1_tiktoken.md`) and minbpe
-(`docs/minbpe-differences.md`).
+Compared against tiktoken by measurement (C1, `results/c1_tiktoken.md`) and
+against minbpe by reading its source (`docs/minbpe-differences.md`).
 
-Remaining in Phase 1: reading tiktoken's source, and the writeup.
+Remaining in Phase 1: the writeup.
 
 ## Run the tests
 
