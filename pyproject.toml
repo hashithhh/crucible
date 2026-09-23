@@ -21,6 +21,10 @@ dev = [
 ]
 # scripts/compare_tiktoken.py only (C1); not needed by tokenizer.py or tests
 compare = ["tiktoken>=0.14"]
+# Phase 2 model work (crucible/model.py, crucible/sampling.py). tokenizer.py
+# stays standard-library only. Install the CUDA build from PyTorch's index:
+#   pip install torch --index-url https://download.pytorch.org/whl/cu132
+model = ["torch>=2.6"]
 
 [tool.setuptools]
 py-modules = ["tokenizer"]   # flat layout; don't let auto-discovery guess
