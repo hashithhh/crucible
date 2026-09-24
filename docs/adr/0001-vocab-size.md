@@ -20,6 +20,12 @@ The "Now" column uses the round 25M, for comparability with the old figures;
 the last column divides by each model's own total, which is how ADR-0006
 quotes them (4.0% and 7.7%).
 
+`scripts/sweep_vocab.py` has been repointed at S25 (d_model 512, 26,223,616
+parameters) and `results/vocab_sweep.{csv,json,png}` regenerated on
+2026-09-25, so the figure and CSV now report shares on that basis: 4.00% at
+2,048, 8.00% at 4,096. Bytes/token is unchanged, as it must be. The Results
+table below still shows the original 100M / d_model 768 figures, as written.
+
 **The decision does not change, and the reasoning behind it gets stronger.**
 The secondary argument here was that the choice between 2,048 and 4,096 was
 cheap: ~1.6 points of the parameter budget. Under ADR-0006 the same step

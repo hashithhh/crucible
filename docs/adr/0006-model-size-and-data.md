@@ -213,8 +213,12 @@ M100 and G86 are recorded for comparison only; neither is trained.
   is stronger: at S25 the 2,048 embedding is 4.0% of parameters, and 4,096
   would make it 7.7%. Same answer; ADR-0001's text still cites the 100M
   budget.
-- **CLAUDE.md and the README still describe a ~100M model.** They need
-  updating to match this ADR.
+- ~~**CLAUDE.md and the README still describe a ~100M model.**~~ **Done
+  2026-09-23/25:** the README, CLAUDE.md, the Phase 1 writeup and
+  `scripts/sweep_vocab.py` (with its regenerated figure and CSV) all state
+  ~25M. Remaining 100M mentions in the repo are historical by design: this
+  ADR's rejected options, ADR-0001's original text under its amendment, and
+  `model_budget.py`'s M100 config, which exists to be compared against.
 - **Phase 3 opens by measuring MFU** on a T4 and re-running
   `model_budget.py`. If S25 lands well below 25% MFU, hours scale up
   proportionally. The decision does not change until they exceed a session.

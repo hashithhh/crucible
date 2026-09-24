@@ -41,8 +41,11 @@ from tokenizer import Tokenizer  # noqa: E402
 VOCAB_SIZES = [512, 1024, 2048, 4096, 8192, 16384, 32768]
 TRAIN_BYTES = 5_000_000
 HELDOUT_BYTES = 500_000
-D_MODEL = 768
-PARAM_BUDGET = 100_000_000
+# ADR-0006 replaced the ~100M / d_model 768 plan these two once held with
+# S25. ADR-0001 was decided under the old pair and carries a dated
+# amendment giving both sets of percentages.
+D_MODEL = 512  # ADR-0006, S25
+PARAM_BUDGET = 26_223_616  # ADR-0006, S25 total parameters
 SEPARATOR = "<|endoftext|>"
 TIMING_REPEATS = 3  # median of 3; single runs varied ~3% in ADR-0005 benchmarks
 EXHAUSTION_PROBE_VOCAB = 1_000_000  # far above any reachable size; forces ADR-0003

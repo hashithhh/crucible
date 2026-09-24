@@ -15,8 +15,8 @@
     ],
     "train_bytes_budget": 5000000,
     "heldout_bytes_budget": 500000,
-    "d_model": 768,
-    "param_budget": 100000000,
+    "d_model": 512,
+    "param_budget": 26223616,
     "timing_repeats": 3
   },
   "corpus": {
@@ -37,5 +37,5 @@
     "python": "3.13.5",
     "threads_used": 1
   },
-  "date": "2026-09-17"
+  "date": "2026-09-25"
 }
