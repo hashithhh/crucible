@@ -6,6 +6,36 @@
   Every figure below comes from that script, whose inputs are the measured
   constants listed under Sources.
 
+## Amendment, 2026-09-25 — phase numbering, and first measured throughput
+
+Two corrections to what this ADR assumed, with the original text below left
+as written.
+
+**Phase numbering.** This ADR and ADR-0001 both say "Phase 2 trains the
+tokenizer on TinyStories-train". The project's phase list puts the
+*transformer* at Phase 2 (built 2026-09-24) and training at Phase 3, so the
+list wins: **retraining the tokenizer on the full 1.9 GB corpus, and
+re-measuring bytes/token on it, belongs to Phase 3 data preparation**, before
+any training run. Nothing about the decisions changes; only where the task
+sits. It is still not done.
+
+**First measured throughput** (`results/s25_smoke.json`), S25 on the local
+RTX 4050 Laptop, bf16 autocast, AdamW, context 512:
+
+| Micro-batch | Tokens/s | Peak allocated |
+|---:|---:|---:|
+| 8 | 38,900 | 1.32 GB |
+| 16 | 41,500 | 2.19 GB |
+| 32 | 40,100 | 3.92 GB |
+
+The memory estimate above said 2.2 GB at micro-batch 16 including 0.5 GB of
+CUDA overhead; measured allocation alone is 2.19 GB, so the model fits the
+6 GB card with room to spare but the estimate was optimistic by roughly that
+overhead. 40k tokens/s is ~7.3 TFLOP/s against this card, i.e. a low-to-mid
+MFU, which suggests the 25-40% band assumed for the T4 is optimistic for a
+512-wide model. One epoch of 510M tokens takes ~3.5 hours locally. The T4
+measurement Phase 3 owes is still owed.
+
 ## Context
 The project's working target has been a ~100M-parameter model. ADR-0001 fixed
 the tokenizer at 2,048 tokens, which turns TinyStories-train (1,924,281,556

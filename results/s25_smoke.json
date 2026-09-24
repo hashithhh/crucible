@@ -1,0 +1,28 @@
+{
+  "config": {
+    "d_model": 512,
+    "n_layers": 8,
+    "context": 512
+  },
+  "params": 26223616,
+  "gpu": "NVIDIA GeForce RTX 4050 Laptop GPU",
+  "micro_batch_8": {
+    "step_seconds": 0.1052,
+    "tokens_per_s": 38917,
+    "peak_gb": 1.32,
+    "loss": 6.4
+  },
+  "micro_batch_16": {
+    "step_seconds": 0.1974,
+    "tokens_per_s": 41495,
+    "peak_gb": 2.19,
+    "loss": 7.144
+  },
+  "micro_batch_32": {
+    "step_seconds": 0.4084,
+    "tokens_per_s": 40121,
+    "peak_gb": 3.92,
+    "loss": 7.424
+  },
+  "decode_tokens_per_s": 26.7
+}
