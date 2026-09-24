@@ -46,6 +46,7 @@ pytest
 | 0004 | Invalid UTF-8 on decode | accepted — errors="replace" |
 | 0005 | Pre-tokenization pattern | accepted — GPT-4 (cl100k), translated to stdlib `re` |
 | 0006 | Model size and data | accepted — ~25M (S25: d512, 8 layers, 8 heads) on TinyStories only |
+| 0007 | Architecture constants | accepted — RoPE base 10k, RMSNorm eps 1e-6, init 0.02, GELU, pre-norm, no biases |
 
 ## Rules
 

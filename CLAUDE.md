@@ -33,7 +33,7 @@ What this changes, concretely:
 - Tests touch the **public interface only** (`vocab_size`, `train`, `encode`,
   `decode`, `register_special_tokens`, `save`, `load`). Internal structure is
   unconstrained.
-- ADR for every constant. No magic numbers. ADRs 0001–0006 are
+- ADR for every constant. No magic numbers. ADRs 0001–0007 are
   accepted.
 - Apache-2.0.
 - Every commit message states who wrote the code in it.
