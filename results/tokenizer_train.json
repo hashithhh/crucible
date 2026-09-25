@@ -1,0 +1,39 @@
+{
+  "vocab_size_learned": 2048,
+  "vocab_size_with_specials": 2049,
+  "model": "D:\\PROJECTS\\Crucible\\models\\tinystories-2048.model",
+  "corpus": {
+    "file": "TinyStories-train.txt",
+    "sha256": "c5cf5e22ff13614e830afbe61a99fbcbe8bcb7dd72252b989fa1117a368d401f",
+    "sample_mb": null
+  },
+  "corpus_stats": {
+    "text_bytes": 1894605665,
+    "separators": 2119718,
+    "slices": 59,
+    "chunk_types": 76058,
+    "chunk_total": 440638473
+  },
+  "count_seconds": 852.0,
+  "train_seconds": 5.0,
+  "heldout": {
+    "source": "ADR-0001 held-out slice (TinyStories-valid, far end)",
+    "bytes": 499260,
+    "stories": 574,
+    "tokens": 133731,
+    "bytes_per_token": 3.7333,
+    "encode_seconds": 1.13
+  },
+  "adr_0001_bytes_per_token": 3.7258,
+  "change_vs_adr_0001": 0.002,
+  "hardware": {
+    "cpu": "AMD Ryzen 7 7735HS with Radeon Graphics",
+    "logical_cpus": 16,
+    "ram_gb": 15.3,
+    "os": "Windows-11-10.0.26200-SP0",
+    "python": "3.13.5",
+    "threads_used": 1
+  },
+  "python": "3.13.5",
+  "date": "2026-09-25"
+}

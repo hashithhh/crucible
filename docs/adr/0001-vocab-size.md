@@ -236,10 +236,20 @@ drift.
   (Robustness), it may move again. The decision does not rest on the knee,
   but it does rest on the measured bytes/token at 2,048 and 4,096 and the
   token counts derived from them. Re-run the sweep against the tokenizer
-  training corpus in Phase 2 and record the result here; do not assume 2,048
-  carries over. If a later measurement favours 4,096, switching costs ~1.6
-  points of budget; each further doubling doubles the step (8,192 would be
-  +4.7 points over 2,048).
+  training corpus and record the result here; do not assume 2,048 carries
+  over. If a later measurement favours 4,096, switching costs ~1.6 points of
+  budget; each further doubling doubles the step (8,192 would be +4.7 points
+  over 2,048).
+
+  **Measured 2026-09-25 (2,048 only).** The tokenizer was retrained on all of
+  TinyStories-train: 1.895 GB of story text, 2,119,718 stories, 76,058 chunk
+  types, 440.6M chunks; 852 s to count, 5.0 s to merge. On this ADR's
+  held-out slice it gives **3.7333 bytes/token, +0.20% against the 5 MB
+  sample's 3.7258**, so the assumption held and nothing downstream moves.
+  Artifacts: `scripts/train_tokenizer.py`, `models/tinystories-2048.model`,
+  `results/tokenizer_train.json`. The full sweep was **not** re-run at scale,
+  so 4,096's full-corpus figure and this corpus's true merge ceiling remain
+  unmeasured; each would cost ~14 minutes of counting.
 - **Embedding-table rounding** (e.g. padding rows to a multiple of 64 for
   kernel efficiency) is a Phase 3 implementation detail and does not change
   this decision.

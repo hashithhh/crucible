@@ -6,9 +6,11 @@ __pycache__/
 .venv/
 *.egg-info/
 
-# trained tokenizer artifacts
+# trained tokenizer artifacts (scratch); the production tokenizer under
+# models/ is versioned, because Phase 3 training depends on that exact file
 *.model
 *.vocab
+!models/*.model
 
 # data and generated output
 data/
