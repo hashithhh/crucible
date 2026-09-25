@@ -50,4 +50,19 @@ What this changes, concretely:
    minbpe **done 2026-09-22** — `docs/minbpe-differences.md` (commit 1acefe8).
    tiktoken compared by measurement (C1, `results/c1_tiktoken.md`); its
    source has not been read.
-5. A public writeup with those numbers, stating how the code was produced.
+5. ~~A public writeup with those numbers, stating how the code was produced~~
+   **done 2026-09-25** — `docs/phase1-writeup.md`; the repo is public.
+
+## Phase 2 definition of done
+
+1. ~~Transformer: attention, MLP, residuals, RMSNorm~~ **done 2026-09-24**.
+2. ~~RoPE~~ **done 2026-09-24**.
+3. ~~KV cache~~ **done 2026-09-24**.
+4. ~~Sampling: greedy, temperature, top-k, top-p~~ **done 2026-09-24**.
+5. ~~Shape-and-gradient tests~~ **done 2026-09-23** — 50 tests, all green.
+6. **G1 GATE — DEFERRED, not done.** Rebuild from memory, blank file, no
+   reference, then record C2. Earliest meaningful date **2026-10-01** (a week
+   after the code landed). Two things to settle first: the implementation is
+   Claude's, so the rebuild tests recall of code read rather than written; and
+   C2's pre-registered target was not found in any vault on this machine.
+   Phase 3 started before this gate ran, deliberately and on the record.

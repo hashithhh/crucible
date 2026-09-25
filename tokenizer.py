@@ -12,7 +12,7 @@ import re
 import sys
 import unicodedata
 from collections import Counter
-from collections.abc import Collection
+from collections.abc import Collection, Mapping
 from functools import cache
 from itertools import pairwise
 from typing import Literal
@@ -89,8 +89,19 @@ def _split_pattern() -> re.Pattern[str]:
     )
 
 
-def _pretokenize(text: str) -> list[str]:
+def pretokenize(text: str) -> list[str]:
+    """Split `text` into cl100k chunks (ADR-0005).
+
+    CONTRACT
+    - Lossless: "".join(pretokenize(t)) == t.
+    - Additive across a split at any chunk boundary, which is what lets a
+      corpus too large for memory be counted in slices. A newline is always a
+      boundary, so slicing on line ends is safe.
+    """
     return _split_pattern().findall(text)
+
+
+_pretokenize = pretokenize  # internal alias, kept so older call sites work
 
 
 # --- Tokenizer ---------------------------------------------------------------
@@ -151,6 +162,21 @@ class Tokenizer:
           ValueError, because learned ids would collide with theirs.
         - `verbose` may print progress. It must not change the result.
         """
+        self.train_from_counts(Counter(pretokenize(text)), vocab_size, verbose)
+
+    def train_from_counts(
+        self,
+        counts: Mapping[str, int],
+        vocab_size: int,
+        verbose: bool = False,
+    ) -> None:
+        """Fit on pre-tokenized chunk counts instead of raw text.
+
+        Same contract as `train`, and `train` is exactly this applied to
+        `Counter(pretokenize(text))`. It exists because training on a corpus
+        larger than memory means counting chunks in slices and merging the
+        counters; the merge loop only ever needed the counts.
+        """
         if vocab_size < 256:
             raise ValueError(
                 f"vocab_size must be at least 256 (the raw bytes), got {vocab_size}"
@@ -168,7 +194,7 @@ class Tokenizer:
         # how often it occurs. Single-byte chunks have no pairs; drop them.
         words: list[list[int]] = []
         freqs: list[int] = []
-        for chunk, count in Counter(_pretokenize(text)).items():
+        for chunk, count in counts.items():
             ids = list(chunk.encode("utf-8"))
             if len(ids) > 1:
                 words.append(ids)
