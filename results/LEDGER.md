@@ -30,6 +30,8 @@ in the repository, under version control, where the git log dates them.
 |---|---|---|---|---|
 | C1 | Tokenizer compression vs tiktoken | backfilled 2026-09-26 | 2026-09-22 | recorded, non-gating |
 | C2 | G1 — rebuild `crucible/model.py` from memory | 2026-09-26, signed | **withdrawn 2026-09-26, unrun** | nothing measured |
+| C3 | Held-out loss of the trained S25 | 2026-09-26, before the run | pending | registered, unrun |
+| C4 | Coherence of sampled text | 2026-09-26, before the run | pending | registered, unrun |
 
 ---
 
@@ -286,3 +288,159 @@ recorded because the alternative — presenting them as Hashith's own bar — is
 the substitution this file exists to prevent. What the registration does
 guarantee is the thing that matters most: the bar was fixed and committed
 before the result existed.
+
+---
+
+# C3 — held-out loss of the trained S25
+
+- **Status:** REGISTERED 2026-09-26, before the run. Unrun.
+- **Phase:** 3.6
+- **Scope:** the final checkpoint of the ADR-0008 run, evaluated on the
+  `val` split of `data/tokens`, which no training step sees.
+
+## What this measures
+
+Whether the Phase 3 pipeline produced a model that learned the corpus —
+end to end: tokenizer, shards, split, loop, schedule, precision.
+
+## Measure
+
+Mean cross-entropy in **nats per token** over the whole `val` split
+(2,177,071 tokens), by `evaluate()` in `scripts/train.py`, at the ADR-0008
+horizon of 6,561 steps. Fixed windows in fixed order, so the number moves only
+when the model does.
+
+## The baselines this is scored against
+
+Measured on this exact split on 2026-09-26, before the model existed, so the
+thresholds below are anchored to evidence rather than to an expectation:
+
+| Predictor | val loss (nats/token) | bits/byte |
+|---|---:|---:|
+| Uniform over 2,049 tokens | 7.6251 | 2.947 |
+| Unigram frequencies (train) | 6.0734 | 2.347 |
+| **Bigram table, Laplace-smoothed (train)** | **3.6190** | **1.399** |
+
+bits/byte uses the measured 3.7333 bytes/token
+(`results/tokenizer_train.json`).
+
+## Thresholds
+
+- **Hard fail: ≥ 3.6190** — the bigram baseline. A 26M-parameter transformer
+  that cannot beat a table of pair counts has not failed to hit a target; it
+  has failed to work. Attention, depth and 430M tokens bought nothing.
+- **Pass: ≤ 2.60** (≈ 1.00 bits/byte). One bit per byte is a recognisable
+  landmark for competent language modelling, roughly where GPT-2-scale models
+  land on general web text. TinyStories is markedly simpler than web text and
+  S25 trains in-domain on 430M tokens of it, so clearing that mark is the
+  least this run should do. It also sits 28% below the measured bigram
+  baseline, so it cannot be reached by anything trivial.
+- **Stretch, recorded but NOT gating: ≤ 2.00** (≈ 0.77 bits/byte). This
+  separates "the pipeline works" from "the model is good". Recording both
+  stops a pass at 2.59 from being described later as a strong result.
+
+## What it does not measure
+
+Nothing about whether the text is any good — loss and readability come apart,
+which is why C4 exists and is judged separately. It also cannot separate a
+good model from an easy corpus: TinyStories is deliberately simple, and a low
+number here would not transfer to general text. And it says nothing about
+ADR-0008's constants being *well chosen*; a different learning rate might have
+reached the same place faster.
+
+## Remedy
+
+A hard fail means the defect is in the pipeline, not the hyperparameters, and
+the first suspects are ordered: the target shift in the loss, the shard
+boundaries, then the schedule. A pass-but-above-stretch is not a failure and
+triggers no rerun; per ADR-0006's amendment the recorded lever is a second
+partial epoch, which is a new registration, not a continuation of this one.
+
+## Sign-off
+
+Registered before the run, 2026-09-26. Baselines measured before the run.
+
+Thresholds proposed by: Claude · set without Hashith's review, on his
+instruction to "complete the remaining phase 3" after three requests for the
+numbers went unanswered. That is recorded here rather than presented as his
+bar — same as C2. What registration guarantees regardless of authorship is the
+only thing that matters: **the bar and its baselines were committed before the
+result existed.**
+
+---
+
+# C4 — coherence of sampled text
+
+- **Status:** REGISTERED 2026-09-26, before the run. Unrun.
+- **Phase:** 3.7
+- **Scope:** the same final checkpoint as C3.
+
+## What this measures
+
+Whether the model produces readable English. Phase 3.7's standard is
+"coherent text, or the run failed", and that is a judgement, so the judgement
+rule is fixed here before any sample exists.
+
+## Procedure
+
+Ten prompts, **fixed below before the model was trained** so they cannot be
+chosen to flatter it:
+
+1. `Once upon a time, there was a little girl named Lily.`
+2. `Tom and Ben were playing in the park when they`
+3. `The cat sat on the mat and looked at`
+4. `"I am scared," said`
+5. `One day, a big dog came to the`
+6. `Sara wanted to bake a cake, so she`
+7. `The old man had a red box. Inside the box was`
+8. `It was raining, so the children`
+9. `Max found a shiny key under the`
+10. `Anna's mum said, "You must not`
+
+Sampling, also fixed here: temperature **0.8**, top-p **0.95**, up to **200**
+new tokens, seed **1337**, stopping at the separator. One sample per prompt;
+no cherry-picking, no re-rolls. All ten are recorded verbatim in
+`results/c4_samples.md` whatever they look like.
+
+## Measure
+
+A sample **counts** only if all three hold:
+
+1. **Grammatical** — reads as English throughout. Simple, repetitive or dull
+   is fine; TinyStories is written that way on purpose.
+2. **On topic** — continues the prompt rather than drifting into an unrelated
+   scene within the first sentence.
+3. **Not looping** — no phrase of three or more words repeated three or more
+   times consecutively.
+
+Judged by **Hashith**, not by Claude, and not by another model. Claude
+generates and records the samples; scoring them is a human reading ten short
+passages. The verbatim record is what makes a disputed call checkable.
+
+## Thresholds
+
+- **Pass: ≥ 7 of 10.**
+- **Hard fail: ≤ 3 of 10.**
+- 4–6 is a partial: the model learned something and the run is not sound.
+
+7 of 10 is where the claim "it produces coherent text" stops needing a
+qualifier. Below that, the honest description is "sometimes coherent", and
+this project has a history of letting qualifiers get dropped between the
+result and the writeup.
+
+## What it does not measure
+
+Factual sense, reasoning, or whether the story is any good. A grammatical,
+on-topic, non-looping passage about a cat that is nevertheless absurd counts
+as a pass, and should: at 26M parameters on TinyStories, absurdity is
+expected and coherence is the bar.
+
+## Sign-off
+
+Registered before the run, 2026-09-26. Prompts and sampling settings fixed
+above, before any sample existed.
+
+Thresholds and prompts proposed by: Claude · set without Hashith's review, on
+the same instruction as C3. **The judging, unlike the thresholds, cannot be
+delegated to Claude and is not:** C4 is unresolved until Hashith reads the ten
+samples and returns a count.
