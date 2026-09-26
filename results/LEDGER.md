@@ -29,7 +29,7 @@ in the repository, under version control, where the git log dates them.
 | ID | Check | Registered | Run | Status |
 |---|---|---|---|---|
 | C1 | Tokenizer compression vs tiktoken | backfilled 2026-09-26 | 2026-09-22 | recorded, non-gating |
-| C2 | G1 — rebuild `crucible/model.py` from memory | 2026-09-26, signed | 2026-09-26, **2-day interval** | pending |
+| C2 | G1 — rebuild `crucible/model.py` from memory | 2026-09-26, signed | **withdrawn 2026-09-26, unrun** | nothing measured |
 
 ---
 
@@ -65,7 +65,35 @@ size. Do not read the number above as a pass or a fail.
 
 # C2 — G1: rebuild the transformer from memory
 
-**Status: registered 2026-09-26, before the attempt.** Drafted by Claude and
+**Status: WITHDRAWN 2026-09-26, unrun.** Registered at 8ddbb64, amended to a
+two-day interval the same day, then withdrawn without being attempted: Hashith
+elected not to sit the rebuild. No rebuild file was ever created — the record is
+`git log`, where `results/c2_rebuild.py` does not appear.
+
+**Nothing was measured, and Phase 2 closes anyway.** That is the honest
+statement and it is not softened elsewhere in this repo. G1 was the one check
+that would have tested whether the architecture was understood rather than
+commissioned; it is withdrawn as a *gate*, not passed. Claude was asked to
+produce the number and declined, because a rebuild written by the author of the
+original is not a measurement of anyone's recall.
+
+This is the second time this project has dropped its own verification step —
+the minbpe comparison went the same way in Phase 1, for the same underlying
+reason. Both are dropped openly rather than left in the definition of done to be
+quietly violated, which is the one thing that keeps the record worth reading.
+
+**Still available as a non-gating exercise.** The apparatus survives:
+`scripts/score_c2.py`, the registered thresholds, the Group A / Group B split.
+Sitting it later measures the same thing it always did; it just no longer blocks
+anything. If it is ever run, it is registered fresh, with a fresh interval, and
+recorded as C2b.
+
+---
+
+*What follows is the registration as it stood when it was withdrawn, kept intact
+so the withdrawn terms are legible rather than rewritten.*
+
+Drafted by Claude and
 accepted by Hashith without amendment — see [Sign-off](#sign-off). How the
 thresholds were set is itself part of the record: Claude proposed them, Hashith
 did not change them. That is weaker than Hashith setting his own bar, and is

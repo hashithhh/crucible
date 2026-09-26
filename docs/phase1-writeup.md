@@ -200,13 +200,21 @@ comparison gate came out of the definition of done rather than being left in to 
 
 The plan was that Phase 2 would restore the check: I would write the transformer, and G1 would
 have me rebuild from memory, a week later, blank file, no reference — code I had written. Then I
-asked Claude to write Phase 2 as well. So G1 now tests recall of code I *read*, which is a weaker
-thing to measure. I am keeping the gate and recording it as that, rather than quietly scoring it
-as if I had written the code.
+asked Claude to write Phase 2 as well. So G1 would have tested recall of code I *read*, which is
+a weaker thing to measure, and I said at the time that I was keeping the gate and recording it as
+that.
 
-Two of the five phases are now Claude-authored. The pattern is worth naming: each time, the
-decision was mine and the typing was not, and each time the check that would have measured my
-understanding is the thing that got dropped.
+I did not keep it. On 2026-09-26 I registered G1 properly for the first time — thresholds and
+procedure committed before the attempt, in `results/LEDGER.md` — shortened the interval from a
+week to two days so it could be done that day, and then withdrew it without sitting it. It is
+struck from Phase 2's definition of done, not passed. **Nothing was measured.** I asked Claude to
+produce the number instead; it declined, which is the only reason this paragraph is accurate.
+
+So the count is: two verification steps designed into this project, both dropped, both for the
+same underlying reason. Each time the decision was mine and the typing was not, and each time the
+check that would have measured my understanding is the thing that became optional. The apparatus
+for G1 still exists (`scripts/score_c2.py`, the registered thresholds); it gates nothing now, and
+if I ever sit it, it gets registered fresh and recorded as C2b.
 
 ---
 
@@ -218,8 +226,9 @@ offset, cached decode matching a full forward, and gradients at step *t* unaffec
 tokens. S25 trains on a 6 GB laptop GPU at about 40,000 tokens/s, peaking at 3.9 GB at
 micro-batch 32, so one epoch over 510M tokens is roughly 3.5 hours locally.
 
-Still to come: the G1 rebuild, then training S25, four ablations (learning rate, warmup, dense vs
-MoE, full vs hybrid attention), and a four-point scaling study against Chinchilla.
+Still to come: training S25, four ablations (learning rate, warmup, dense vs MoE, full vs hybrid
+attention), and a four-point scaling study against Chinchilla. The G1 rebuild is not on that list
+— see above.
 
 Everything above is reproducible from the repo: `scripts/sweep_vocab.py`,
 `scripts/compare_tiktoken.py`, `scripts/model_budget.py`, with raw output in `results/`.

@@ -60,9 +60,16 @@ What this changes, concretely:
 3. ~~KV cache~~ **done 2026-09-24**.
 4. ~~Sampling: greedy, temperature, top-k, top-p~~ **done 2026-09-24**.
 5. ~~Shape-and-gradient tests~~ **done 2026-09-23** — 50 tests, all green.
-6. **G1 GATE — DEFERRED, not done.** Rebuild from memory, blank file, no
-   reference, then record C2. Earliest meaningful date **2026-10-01** (a week
-   after the code landed). Two things to settle first: the implementation is
-   Claude's, so the rebuild tests recall of code read rather than written; and
-   C2's pre-registered target was not found in any vault on this machine.
-   Phase 3 started before this gate ran, deliberately and on the record.
+6. ~~G1 GATE: rebuild from memory, record C2~~ **WITHDRAWN 2026-09-26,
+   unrun** — `results/LEDGER.md`, C2. Registered (8ddbb64), amended to a
+   two-day interval, then withdrawn without being attempted. **Nothing was
+   measured.** Phase 2 closes with five of six items done and the sixth struck,
+   not passed.
+
+   This is the second verification step this project has dropped, after the
+   minbpe comparison in Phase 1, and for the same reason both times: the code
+   was Claude's, so the check that would have measured understanding was the
+   part that became optional. Recorded here rather than quietly omitted.
+
+   **Describe Phase 2 accordingly.** "Built a transformer with AI assistance"
+   is true. "Rebuilt it from memory as a check" is not true of this repo.
