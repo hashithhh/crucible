@@ -65,4 +65,7 @@ What this changes, concretely:
    after the code landed). Two things to settle first: the implementation is
    Claude's, so the rebuild tests recall of code read rather than written; and
    C2's pre-registered target was not found in any vault on this machine.
-   Phase 3 started before this gate ran, deliberately and on the record.
+   Phase 3 started before this gate ran, deliberately and on the record. A
+   Codex-authored, reference-assisted simulation scored 21/22 on 2026-09-26;
+   it is recorded in `results/c2_rebuild.md`, is not C2, and does not satisfy
+   this gate.

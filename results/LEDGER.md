@@ -29,7 +29,7 @@ in the repository, under version control, where the git log dates them.
 | ID | Check | Registered | Run | Status |
 |---|---|---|---|---|
 | C1 | Tokenizer compression vs tiktoken | backfilled 2026-09-26 | 2026-09-22 | recorded, non-gating |
-| C2 | G1 — rebuild `crucible/model.py` from memory | 2026-09-26, signed | 2026-09-26, **2-day interval** | pending |
+| C2 | G1 — rebuild `crucible/model.py` from memory | 2026-09-26, signed | pending | pending — see non-qualifying Codex simulation below |
 
 ---
 
@@ -258,3 +258,17 @@ recorded because the alternative — presenting them as Hashith's own bar — is
 the substitution this file exists to prevent. What the registration does
 guarantee is the thing that matters most: the bar was fixed and committed
 before the result existed.
+
+## Non-qualifying Codex simulation — 2026-09-26
+
+At Hashith's explicit request, Codex wrote `results/c2_rebuild.py`, sealed it
+in `d9f382e`, and ran the scorer. It received **21 / 22** (Group A 10 / 10,
+Group B 11 / 12); the omitted point is the GPU parity check, skipped because
+the runner had no CUDA device. The complete output is in
+`results/c2_rebuild.md` and `results/c2_rebuild.json`.
+
+This is not C2: Codex provided model assistance and consulted ADR-0007, the
+scoring script, and the full model test suite before implementation. It was
+not a timed human from-memory reconstruction. The score is retained as an
+implementation compatibility check only; the registered C2/G1 attempt remains
+pending and Phase 2 remains open.

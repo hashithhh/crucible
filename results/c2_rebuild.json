@@ -1,0 +1,140 @@
+{
+  "c2": {
+    "rebuild": "results/c2_rebuild.py",
+    "dry_run": false,
+    "seal": {
+      "tracked": true,
+      "unmodified": true,
+      "sealed_in": "d9f382ed3ea02cd7112edcf1f0a89d59996f1e15"
+    },
+    "shim_lines": 0,
+    "collection_failed": false,
+    "passed": 21,
+    "of": 22,
+    "group_a": {
+      "passed": 10,
+      "of": 10
+    },
+    "group_b": {
+      "passed": 11,
+      "of": 12
+    },
+    "constant_recall_test": "passed",
+    "pass_at": 14,
+    "hard_fail_below": 7,
+    "verdict": "pass",
+    "measures": "recall of code read, not code written (CLAUDE.md, Authorship)"
+  },
+  "tests": [
+    {
+      "name": "test_config_rejects_indivisible_head_split",
+      "outcome": "passed",
+      "error": null
+    },
+    {
+      "name": "test_rmsnorm_is_scale_invariant_and_shape_preserving",
+      "outcome": "passed",
+      "error": null
+    },
+    {
+      "name": "test_rmsnorm_survives_zeros_and_normalises_last_dim_only",
+      "outcome": "passed",
+      "error": null
+    },
+    {
+      "name": "test_rmsnorm_has_one_parameter_vector",
+      "outcome": "passed",
+      "error": null
+    },
+    {
+      "name": "test_rope_preserves_shape_and_norm",
+      "outcome": "passed",
+      "error": null
+    },
+    {
+      "name": "test_mlp_is_position_wise",
+      "outcome": "passed",
+      "error": null
+    },
+    {
+      "name": "test_block_with_zeroed_outputs_is_identity",
+      "outcome": "passed",
+      "error": null
+    },
+    {
+      "name": "test_forward_shape_and_dtype",
+      "outcome": "passed",
+      "error": null
+    },
+    {
+      "name": "test_single_step_forward_works",
+      "outcome": "passed",
+      "error": null
+    },
+    {
+      "name": "test_forward_is_deterministic",
+      "outcome": "passed",
+      "error": null
+    },
+    {
+      "name": "test_s25_parameter_count_matches_adr_0006",
+      "outcome": "passed",
+      "error": null
+    },
+    {
+      "name": "test_rope_at_position_zero_is_identity",
+      "outcome": "passed",
+      "error": null
+    },
+    {
+      "name": "test_rope_dot_product_depends_only_on_offset",
+      "outcome": "passed",
+      "error": null
+    },
+    {
+      "name": "test_attention_is_causal",
+      "outcome": "passed",
+      "error": null
+    },
+    {
+      "name": "test_model_is_causal",
+      "outcome": "passed",
+      "error": null
+    },
+    {
+      "name": "test_context_limit_and_id_range_are_enforced",
+      "outcome": "passed",
+      "error": null
+    },
+    {
+      "name": "test_every_parameter_receives_gradient",
+      "outcome": "passed",
+      "error": null
+    },
+    {
+      "name": "test_gradients_ignore_later_tokens",
+      "outcome": "passed",
+      "error": null
+    },
+    {
+      "name": "test_cache_reports_length_and_rejects_overflow",
+      "outcome": "passed",
+      "error": null
+    },
+    {
+      "name": "test_kv_cache_matches_full_forward",
+      "outcome": "passed",
+      "error": null
+    },
+    {
+      "name": "test_cache_reset_gives_a_fresh_sequence",
+      "outcome": "passed",
+      "error": null
+    },
+    {
+      "name": "test_runs_on_gpu_and_matches_cpu",
+      "outcome": "skipped",
+      "error": null
+    }
+  ]
+}

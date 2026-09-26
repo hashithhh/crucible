@@ -204,6 +204,12 @@ asked Claude to write Phase 2 as well. So G1 now tests recall of code I *read*, 
 thing to measure. I am keeping the gate and recording it as that, rather than quietly scoring it
 as if I had written the code.
 
+On 2026-09-26, Codex produced a reference-assisted compatibility simulation
+that passed 21 of the 22 C2 checks (the CUDA-only check was skipped). It is
+not the G1 rebuild: it used AI assistance and the ADR and tests, so it cannot
+support any claim about my recall. The full provenance is recorded in
+`results/c2_rebuild.md`.
+
 Two of the five phases are now Claude-authored. The pattern is worth naming: each time, the
 decision was mine and the typing was not, and each time the check that would have measured my
 understanding is the thing that got dropped.
@@ -218,8 +224,9 @@ offset, cached decode matching a full forward, and gradients at step *t* unaffec
 tokens. S25 trains on a 6 GB laptop GPU at about 40,000 tokens/s, peaking at 3.9 GB at
 micro-batch 32, so one epoch over 510M tokens is roughly 3.5 hours locally.
 
-Still to come: the G1 rebuild, then training S25, four ablations (learning rate, warmup, dense vs
-MoE, full vs hybrid attention), and a four-point scaling study against Chinchilla.
+Still to come: the human, no-reference G1 rebuild, then training S25, four ablations (learning
+rate, warmup, dense vs MoE, full vs hybrid attention), and a four-point scaling study against
+Chinchilla.
 
 Everything above is reproducible from the repo: `scripts/sweep_vocab.py`,
 `scripts/compare_tiktoken.py`, `scripts/model_budget.py`, with raw output in `results/`.
