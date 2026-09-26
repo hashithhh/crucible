@@ -73,3 +73,60 @@ What this changes, concretely:
 
    **Describe Phase 2 accordingly.** "Built a transformer with AI assistance"
    is true. "Rebuilt it from memory as a check" is not true of this repo.
+
+## Phase 3 definition of done
+
+Train S25 (26.2M params, ADR-0006) to convergence on the full corpus, and be
+able to show the loss curve, the samples, and how both were produced.
+
+1. ~~**3.0** Tokenizer trained on the full 1.9 GB corpus~~ **done 2026-09-25**
+   — 3.7333 bytes/token held out, 0.2% off ADR-0001
+   (`results/tokenizer_train.json`).
+2. **3.1 Data pipeline.** TinyStories only — **ADR-0006 §1 already rejected
+   the FineWeb-Edu option** and the decision stands until Phase 5 says
+   otherwise, so this is not an open choice. Dedup, shard, memmap, and a
+   held-out split no training step sees. Encoding is the bottleneck: 0.33 MB/s
+   single-threaded (C1) is ~97 min of CPU for 1.9 GB, embarrassingly parallel
+   across stories. Round-trip verified on a sample, and the **realised token
+   count recorded against ADR-0006's 510.5M** — dedup will move it, and with
+   it the 19.5 tokens/param that justified S25's size.
+3. **3.2 Training loop.** AdamW, cosine schedule with warmup, gradient
+   clipping.
+4. **3.3 Mixed precision,** with the loss scaler understood rather than
+   copied: bf16 locally, FP16 **with** a scaler on a T4 (Turing has no bf16).
+   Why the scaler exists goes in ADR-0008 in one paragraph — if it cannot be
+   written down it was not understood.
+5. **3.4 Checkpointing and resume.** Kaggle sessions are 12 hours and
+   ADR-0006 budgets the run against that. Resume must be exact, not
+   approximate.
+6. **3.5 Logging:** loss, LR, grad norm, tokens/sec, GPU memory — to
+   `results/`, not just stdout.
+7. **3.6 Train S25 to convergence** (ADR-0006). **C3 and C4 registered in
+   `results/LEDGER.md` before the run starts**, per the ledger's rule 1. Their
+   targets are not recorded anywhere in this repo; see the note below.
+8. **3.7 Sample from it.** Coherent text, or the run failed — this is the
+   whole point of Phase 2's sampler and the first evidence the pipeline works
+   rather than merely runs.
+
+Carried over because nothing else covers them:
+
+9. **ADR-0008 — training hyperparameters.** LR, schedule, warmup, batch and
+   micro-batch, clipping, weight decay, precision. No magic numbers; borrowed
+   values say where from.
+10. **Tests, public behaviour only.** Exact resume (checkpoint, resume,
+    identical loss), shard-reader boundaries, LR schedule shape. Same standard
+    as Phases 1 and 2.
+11. **MFU measured on a T4, `model_budget.py` re-run with it.** ADR-0006's T4
+    hours assume 25-40% MFU and it records this as the first thing Phase 3
+    owes. The local 4050 figure (~40k tokens/s, ~7.3 TFLOP/s) suggests that
+    band is optimistic.
+12. **A Phase 3 writeup** with the numbers, stating how the code was produced.
+
+**C3 and C4 are undefined.** The checklist says "record C3, C4" but no target
+for either exists in this repo or in any vault on this machine — the same gap
+C1 and C2 hit. Candidates, given 3.6 and 3.7: **C3 = held-out loss** against a
+pre-registered value, **C4 = sample coherence** under a stated judgement.
+Both must be written down before the run, or they are not checks.
+
+**Not in Phase 3:** the ablations and the scaling ladder — Phases 4 and 5,
+sized in ADR-0006 §2 and §3.
