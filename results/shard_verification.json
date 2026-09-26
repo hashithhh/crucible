@@ -1,0 +1,24 @@
+{
+  "date": "2026-09-26",
+  "corpus": {
+    "file": "TinyStories-train.txt",
+    "sha256": "c5cf5e22ff13614e830afbe61a99fbcbe8bcb7dd72252b989fa1117a368d401f"
+  },
+  "checked_stories": 200,
+  "tokens": {
+    "train": 429998810,
+    "val": 2177071
+  },
+  "total_tokens": 432175881,
+  "separators": {
+    "train": 1790220,
+    "val": 9028
+  },
+  "unique_stories": 1799248,
+  "adr_0006_estimate": 510500000,
+  "delta_vs_estimate": -0.1534,
+  "tokens_per_param": 16.48,
+  "s25_params": 26223616,
+  "failures": [],
+  "seconds": 3.7
+}

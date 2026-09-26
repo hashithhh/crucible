@@ -6,6 +6,62 @@
   Every figure below comes from that script, whose inputs are the measured
   constants listed under Sources.
 
+## Amendment, 2026-09-26 — the corpus is 432M tokens, not 510.5M
+
+The data budget this ADR was decided on has been measured rather than
+estimated. `scripts/encode_corpus.py` encoded the full corpus and
+`scripts/verify_shards.py` read it back
+(`data/tokens/meta.json`, `results/shard_verification.json`):
+
+| | Estimated here | Measured 2026-09-26 |
+|---|---:|---:|
+| Stories | not counted | 2,119,489 seen, **1,799,248 unique** |
+| Exact duplicates | not modelled | **320,241 (15.1%)** |
+| Tokens | 510,500,000 | **432,175,881** (−15.3%) |
+| Tokens per S25 param | 19.5 | **16.48** |
+
+**The gap is entirely duplicates, and the tokenizer's estimate was sound.**
+510.5M came from applying ADR-0001's bytes/token to all 1.92 GB, and 15% of
+that text is repeated verbatim. Dedup removed 15.1% of stories and 15.3% of
+tokens — a correspondence close enough to say nothing else went missing, and
+the separator count confirms it exactly: 1,799,248 separators for 1,799,248
+unique stories. So 19.5 tokens/param was never real. It was a count of the
+corpus with its duplicates included, and it is being corrected downward, not
+lost.
+
+### Decision: **S25 holds at 26.2M parameters.**
+
+1. **Chinchilla is compute-optimal, not loss-optimal at fixed data.** The
+   ratio is the right shape of argument when both model and data are free to
+   move. Here the data is fixed at 432M tokens, and a model shrunk to the
+   21.6M that restores 20 tokens/param would reach a *worse* held-out loss
+   than S25 on the same corpus. Shrinking to make a ratio come out is
+   optimising the justification rather than the model.
+2. **16.5 is inside the band the ADR already accepted.** Option (d) in §1 was
+   scored at 20.3 and option (a) at 19.9; the rejected undertrained case was
+   option (c) at **5.1** tokens/param. 16.5 sits with the first group, not
+   near the failure mode this ADR was written to avoid.
+3. **The memory and hours arguments are untouched.** They depend on parameter
+   count and context, not on corpus size. One epoch simply becomes 15%
+   cheaper: ~3.0 hours locally at the measured 40k tokens/s, down from ~3.5.
+
+**What this costs, stated plainly.** S25 will see ~82% of the tokens
+Chinchilla would spend on a model its size. That is a real, if modest,
+undertraining, and it is being accepted rather than argued away. If Phase 3's
+loss curve is still falling steeply at the end of epoch one, the lever is a
+second partial epoch — repeated data, worth less per token than fresh data,
+and recorded here as available rather than taken.
+
+**Figures elsewhere that are now stale** and say 510.5M or 19.5: §1's
+comparison table, §3's sizes table (the "Tokens/param (510.5M)" column and
+the 139 → 19.5 ladder span), the Consequences note that recomputes ADR-0001's
+vocabulary tie-break, and `scripts/model_budget.py`'s token input. They are
+left as written, per this ADR's practice of amending rather than rewriting.
+The one that changes a decision is ADR-0001's: at 432.2M tokens, 2,048 now
+supplies 82% of S25's Chinchilla target rather than 97%. The budget argument
+that actually settled it — a 2,048 embedding is 4.0% of S25's parameters
+against 7.7% for 4,096 — is unaffected, so the decision still holds.
+
 ## Amendment, 2026-09-25 — phase numbering, and first measured throughput
 
 Two corrections to what this ADR assumed, with the original text below left

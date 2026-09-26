@@ -82,14 +82,16 @@ able to show the loss curve, the samples, and how both were produced.
 1. ~~**3.0** Tokenizer trained on the full 1.9 GB corpus~~ **done 2026-09-25**
    — 3.7333 bytes/token held out, 0.2% off ADR-0001
    (`results/tokenizer_train.json`).
-2. **3.1 Data pipeline.** TinyStories only — **ADR-0006 §1 already rejected
-   the FineWeb-Edu option** and the decision stands until Phase 5 says
-   otherwise, so this is not an open choice. Dedup, shard, memmap, and a
-   held-out split no training step sees. Encoding is the bottleneck: 0.33 MB/s
-   single-threaded (C1) is ~97 min of CPU for 1.9 GB, embarrassingly parallel
-   across stories. Round-trip verified on a sample, and the **realised token
-   count recorded against ADR-0006's 510.5M** — dedup will move it, and with
-   it the 19.5 tokens/param that justified S25's size.
+2. ~~**3.1 Data pipeline.** Dedup, shard, memmap, held-out split,
+   round-trip verified, realised token count against ADR-0006~~ **done
+   2026-09-26** — `data/tokens/meta.json`, `results/shard_verification.json`.
+   432,175,881 tokens from 1,799,248 unique stories after removing 320,241
+   exact duplicates (15.1%); 7 train shards and 1 val shard, uint16,
+   memmap-able. Encoding ran at 1.0M tokens/s across 16 workers, 7.2 min
+   against ~97 min single-threaded. **The measured corpus is 15.3% smaller
+   than ADR-0006's 510.5M estimate, so S25 trains at 16.48 tokens/param, not
+   19.5.** ADR-0006 is amended 2026-09-26: S25 holds, and what that costs is
+   stated there rather than smoothed over.
 3. **3.2 Training loop.** AdamW, cosine schedule with warmup, gradient
    clipping.
 4. **3.3 Mixed precision,** with the loss scaler understood rather than
