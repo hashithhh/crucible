@@ -29,7 +29,7 @@ in the repository, under version control, where the git log dates them.
 | ID | Check | Registered | Run | Status |
 |---|---|---|---|---|
 | C1 | Tokenizer compression vs tiktoken | backfilled 2026-09-26 | 2026-09-22 | recorded, non-gating |
-| C2 | G1 — rebuild `crucible/model.py` from memory | 2026-09-26, **unsigned** | not run; earliest 2026-10-01 | pending |
+| C2 | G1 — rebuild `crucible/model.py` from memory | 2026-09-26, signed | 2026-09-26, **2-day interval** | pending |
 
 ---
 
@@ -65,16 +65,18 @@ size. Do not read the number above as a pass or a fail.
 
 # C2 — G1: rebuild the transformer from memory
 
-**Status: pre-registered, awaiting sign-off.** Everything below was drafted by
-Claude on 2026-09-26 and is a proposal. The thresholds are the part that has to
-be Hashith's — see [Sign-off](#sign-off). Until that line is filled in and
-committed, C2 is not registered, and running the rebuild would waste the
-attempt.
+**Status: registered 2026-09-26, before the attempt.** Drafted by Claude and
+accepted by Hashith without amendment — see [Sign-off](#sign-off). How the
+thresholds were set is itself part of the record: Claude proposed them, Hashith
+did not change them. That is weaker than Hashith setting his own bar, and is
+noted here rather than left to be inferred.
 
 ## What this measures
 
 Whether the transformer's structure and its non-obvious properties can be
-reproduced without reference, a week after exposure.
+reproduced without reference, **two days** after exposure. The registered
+interval was one week; see [Interval](#interval) for why it changed and what
+that costs.
 
 ## What it does not measure
 
@@ -117,6 +119,27 @@ score uninterpretable. If it is wanted, register it separately as C3.
    the seal in step 2 is enforced rather than trusted. A rebuild whose names
    differ enough that the tests cannot import it scores 0 — that is what the
    shim below exists to rescue.
+
+## Interval
+
+G1 was registered at one week after the 2026-09-24 build, earliest 2026-10-01.
+On 2026-09-26 Hashith elected to run it at **two days** instead, to close Phase
+2 without waiting. Amended and committed before the attempt, not after.
+
+**What this costs.** Two days is a materially easier test than seven; a good
+result at this interval does not support the claim the seven-day version would
+have. Wherever C2's number appears it carries the interval with it. The gate is
+not thereby worthless — a two-day cold rebuild still separates recall from
+recognition — but it is a weaker instrument than the one originally registered,
+and the writeup should say two days rather than "the G1 gate".
+
+**Recorded exposure.** During registration on 2026-09-26, in the session that
+produced this file, Hashith saw: the names of the eight public symbols in
+`crucible/model.py` (Scope, above), and all 22 test names in
+`tests/test_model.py` (Measure, below). Neither reveals an implementation, but
+both are more than a cold start, and the Group A / Group B split signposts which
+properties matter. This is real contamination and is recorded rather than
+discounted, per the clause below.
 
 **Exposure before the attempt.** The procedure above bars reference material
 *during* the rebuild and says nothing about the days before it, which leaves
@@ -219,15 +242,19 @@ deferral correctly.
 
 ## Sign-off
 
-C2 is registered once Hashith fills this in and commits it:
+Registered before the attempt, 2026-09-26.
 
-- Time box: ____ (proposed: 2 hours)
-- Pass: ____ / 22 (proposed: 14)
-- Hard-fail floor: ____ / 22 (proposed: 7)
-- No contact with `model.py` / `test_model.py` / ADR-0007 after: __________
-  (proposed: 2026-09-26)
-- Registered by: ____________   Date: __________
+- Time box: **2 hours**
+- Pass: **14 / 22**
+- Hard-fail floor: **7 / 22**
+- Interval: **2 days** (amended from 7 — see [Interval](#interval))
+- No contact with `model.py` / `test_model.py` / ADR-0007 from now until the
+  attempt, beyond the exposure recorded above
+- Thresholds proposed by: Claude · Accepted unamended by: Hashith · Date:
+  2026-09-26
 
-**Do not run the rebuild before this is committed.** An unsigned threshold is
-Claude's guess at a bar for Hashith's recall, which is exactly the kind of
-substitution this file exists to prevent.
+Every number above is Claude's proposal that Hashith did not change. That is
+recorded because the alternative — presenting them as Hashith's own bar — is
+the substitution this file exists to prevent. What the registration does
+guarantee is the thing that matters most: the bar was fixed and committed
+before the result existed.
