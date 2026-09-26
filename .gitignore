@@ -19,3 +19,6 @@ crucible_feasibility.json
 
 # local tool state
 .serena/
+
+# Phase 3 training checkpoints: ~300 MB each, reproducible from the log
+checkpoints/

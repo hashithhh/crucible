@@ -92,17 +92,27 @@ able to show the loss curve, the samples, and how both were produced.
    than ADR-0006's 510.5M estimate, so S25 trains at 16.48 tokens/param, not
    19.5.** ADR-0006 is amended 2026-09-26: S25 holds, and what that costs is
    stated there rather than smoothed over.
-3. **3.2 Training loop.** AdamW, cosine schedule with warmup, gradient
-   clipping.
-4. **3.3 Mixed precision,** with the loss scaler understood rather than
-   copied: bf16 locally, FP16 **with** a scaler on a T4 (Turing has no bf16).
-   Why the scaler exists goes in ADR-0008 in one paragraph — if it cannot be
-   written down it was not understood.
-5. **3.4 Checkpointing and resume.** Kaggle sessions are 12 hours and
-   ADR-0006 budgets the run against that. Resume must be exact, not
-   approximate.
-6. **3.5 Logging:** loss, LR, grad norm, tokens/sec, GPU memory — to
-   `results/`, not just stdout.
+3. ~~**3.2 Training loop.** AdamW, cosine schedule with warmup, gradient
+   clipping~~ **done 2026-09-26** — `scripts/train.py`, `crucible/training.py`,
+   ADR-0008. The schedule is a pure function with 20 tests on the properties
+   ADR-0008 relies on, because a wrong schedule does not crash: it trains,
+   looks plausible, and costs three hours.
+4. ~~**3.3 Mixed precision,** with the loss scaler understood rather than
+   copied~~ **done 2026-09-26** — `pick_precision` picks bf16 or fp16+scaler
+   from the hardware; the paragraph on why the scaler exists is in ADR-0008,
+   Precision. Verified on the local card: bf16, no scaler. **The fp16 path is
+   unexercised** — no Turing GPU here — so it is written and reasoned, not
+   demonstrated.
+5. ~~**3.4 Checkpointing and resume**, exact rather than approximate~~
+   **done 2026-09-26** — `tests/test_train_resume.py` trains 8 steps
+   uninterrupted, then 4 + resume, and asserts the losses match. The sampler's
+   RNG state is in the checkpoint: without it a resumed run re-sees batches it
+   already trained on while looking perfectly healthy, and a second test
+   deliberately breaks it to prove the first one can fail. `--stop-at` pauses
+   without moving the schedule's horizon.
+6. ~~**3.5 Logging:** loss, LR, grad norm, tokens/sec, GPU memory~~ **done
+   2026-09-26** — JSONL to `results/train_log.jsonl`, one record per logged
+   step plus `run` / `eval` / `paused` / `done` lines, asserted by a test.
 7. **3.6 Train S25 to convergence** (ADR-0006). **C3 and C4 registered in
    `results/LEDGER.md` before the run starts**, per the ledger's rule 1. Their
    targets are not recorded anywhere in this repo; see the note below.
@@ -112,9 +122,10 @@ able to show the loss curve, the samples, and how both were produced.
 
 Carried over because nothing else covers them:
 
-9. **ADR-0008 — training hyperparameters.** LR, schedule, warmup, batch and
-   micro-batch, clipping, weight decay, precision. No magic numbers; borrowed
-   values say where from.
+9. ~~**ADR-0008 — training hyperparameters**~~ **done 2026-09-26** —
+   `docs/adr/0008-training-hyperparameters.md`. Borrowed values say where
+   from; `peak_lr` 6e-4 is the one carrying real risk and is the only
+   constant with a pre-stated revision trigger.
 10. **Tests, public behaviour only.** Exact resume (checkpoint, resume,
     identical loss), shard-reader boundaries, LR schedule shape. Same standard
     as Phases 1 and 2.
