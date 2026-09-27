@@ -72,23 +72,44 @@ def matmul_ceiling(device: torch.device, dtype: torch.dtype) -> float:
 
 
 def throughput_from_log(path: Path) -> tuple[float, str] | None:
-    """Median tokens/s over the logged steps of the real run.
+    """Median tokens/s between consecutive logged steps of the real run.
 
-    The median rather than the mean: the first logged step carries CUDA context
-    setup and the steps beside an eval sit next to a held-out pass. Neither
-    should set the figure the whole run is judged by.
+    NOT the logged `tokens_per_s` field. That field is a cumulative average
+    since the process started, so a single stall poisons every record after
+    it: the 2026-09-27 run slept for 285 minutes mid-run, after which the field
+    read ~3,200 while the GPU was actually doing ~42,000. Rates are computed
+    here from consecutive (tokens, seconds) pairs instead.
+
+    Pairs are only formed WITHIN one process lifetime. `seconds` restarts at
+    zero on resume and a `run` record marks the boundary, so a pair spanning
+    it would be meaningless.
+
+    The median rather than the mean: a stall, the first step's CUDA setup and
+    the intervals that contain a held-out pass are all real but none of them
+    is the loop's speed, and the median ignores each of them.
     """
     if not path.is_file():
         return None
     rates = []
+    prev = None
     for line in path.read_text(encoding="utf-8").splitlines():
         record = json.loads(line)
-        if record.get("kind") == "step" and "tokens_per_s" in record:
-            rates.append(record["tokens_per_s"])
+        kind = record.get("kind")
+        if kind == "run":
+            prev = None  # new process: `seconds` restarts, do not pair across
+            continue
+        if kind != "step" or "seconds" not in record:
+            continue
+        if prev is not None:
+            dt = record["seconds"] - prev["seconds"]
+            dtok = record["tokens"] - prev["tokens"]
+            if dt > 0 and dtok > 0:
+                rates.append(dtok / dt)
+        prev = record
     if len(rates) < 3:
         return None
     rates.sort()
-    return float(rates[len(rates) // 2]), f"{len(rates)} logged steps"
+    return float(rates[len(rates) // 2]), f"{len(rates)} step intervals"
 
 
 def benchmark(
