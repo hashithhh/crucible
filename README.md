@@ -58,6 +58,7 @@ pytest
 | 0006 | Model size and data | accepted — ~25M (S25: d512, 8 layers, 8 heads) on TinyStories only |
 | 0007 | Architecture constants | accepted — RoPE base 10k, RMSNorm eps 1e-6, init 0.02, GELU, pre-norm, no biases |
 | 0008 | Training hyperparameters | accepted — 65,536-token batch, AdamW, peak LR 6e-4 cosine to 6e-5, bf16 / fp16 + loss scaler |
+| 0009 | Phase 4 ablation protocol | accepted — 820-step runs, seed-gap noise floor, 4-expert top-1 MoE, alternating 128-window attention |
 
 ## Rules
 
