@@ -21,15 +21,15 @@ says so; see `CLAUDE.md` for what that changes.
 |---|---|---|
 | 1 | Byte-level BPE tokenizer, 2,048 merges | done — [writeup](docs/phase1-writeup.md) |
 | 2 | Transformer: RMSNorm, RoPE, KV cache, sampling | done; the from-memory rebuild check was withdrawn unrun |
-| 3 | Train S25 on TinyStories | trained — [writeup](docs/phase3-writeup.md) |
+| 3 | Train S25 on TinyStories | done — [writeup](docs/phase3-writeup.md) |
 | 4 | Ablations on S25: LR, warmup, MoE, hybrid attention | done — [writeup](docs/phase4-writeup.md) |
 | 5 | Scaling study vs Chinchilla | done — [writeup](docs/phase5-writeup.md) |
 
 Phase 3 result: one epoch, 6,561 steps, final held-out loss **1.3383
 nats/token (0.517 bits/byte)** against a bigram baseline of 3.6190. Checks and
 their pre-registered bars are in [`results/LEDGER.md`](results/LEDGER.md):
-C3 (held-out loss) **passed**; C4 (sample coherence) has its ten samples in
-`results/c4_samples.md` and is **not yet scored**. MFU on the local card was
+C3 (held-out loss) **passed**; C4 (sample coherence) **passed, 9/10**, scored by
+Claude at the author's request — see the ledger for why that is noted. MFU on the local card was
 32.3%; the T4 measurement was deferred as out of scope.
 
 ## Run the tests

@@ -1,7 +1,6 @@
 # Crucible Phase 3 — training a 26M-parameter model, and the numbers that moved
 
-**Status:** Phase 3 trained and scored. C3 passed; C4's ten samples are recorded and **awaiting my
-score**; the T4 MFU measurement was deferred as out of scope.
+**Status:** Phase 3 done. C3 passed; C4 passed, 9 / 10; the T4 MFU measurement was deferred as out of scope.
 Repo: `github.com/hashithhh/crucible`
 **Date:** 2026-09-28
 
@@ -14,8 +13,8 @@ every commit says so. Two further things were Claude's in this phase that are ea
 of, so I'm stating them here rather than at the end: **the pass marks for both Phase 3 checks were
 set by Claude**, without my review, after I'd left three requests for them unanswered and told it
 to finish the phase. They were written down before the run started, which is the part that
-matters, and the ledger records whose they are. **The judgement on the text samples was not
-delegated** — that one is mine. Details in [The honest part](#the-honest-part).
+matters, and the ledger records whose they are. **So was the judgement on the text samples**, in
+the end: it was meant to be mine, and I handed it over. Details in [The honest part](#the-honest-part).
 
 ---
 
@@ -29,7 +28,7 @@ delegated** — that one is mine. Details in [The honest part](#the-honest-part)
 | Hardware | RTX 4050 Laptop (6 GB), bf16 autocast |
 | Held-out loss | **1.3383 nats/token — 0.517 bits/byte** |
 | C3 (loss) | **pass** (bar 2.60); the non-gating stretch of 2.00 was also met |
-| C4 (text) | samples recorded; **score pending** — see [Text](#text) |
+| C4 (text) | **pass**, 9 / 10 (7 / 10 on the strictest reading) — see [Text](#text) |
 | MFU | **32.3%** on the local card, against a measured matmul ceiling |
 
 ---
@@ -218,7 +217,9 @@ through a conflict towards a resolution. Not every sample is that tidy — in on
 character who says "I am scared", in another a cake is praised for being "so flexible" — and
 deciding whether those count is what the C4 criteria are for.
 
-**C4: [pending: my count out of 10]**
+**C4: pass, 9 / 10.** Only sample 10 fails outright, on grammar ("flowers and birds that the birds
+had chirped"). On the strictest reading, also failing the wind and the cookie sentence, it is
+7 / 10 — still at the bar. Every call has a written reason in `results/c4_samples.md`.
 
 ### Throughput
 
@@ -252,9 +253,12 @@ rather than presenting them as my bar. What made them checks rather than decorat
 were committed to the repo before the run started, and neither was moved once numbers existed —
 including when C3 turned out to be too easy (see above).
 
-**C4 is the one judgement I didn't delegate.** The ten text samples were generated with prompts
-and settings fixed in the ledger before the model was trained, one sample each, no re-rolls, and
-recorded verbatim. [pending: C4 scoring note — only say "I scored them" once Hashith has]
+**C4 was meant to be the one judgement I didn't delegate, and I delegated it.** The ten samples
+were generated with prompts and settings fixed in the ledger before the model was trained, one
+sample each, no re-rolls, and recorded verbatim. The ledger named me as the judge; I asked Claude to
+score them instead, so the model's builder scored the model's output. The ledger records that
+departure, every call has a written reason, and a strict count is given alongside — both clear
+the bar.
 
 **Some of the pipeline is only partly exercised.** The fp16 path with a loss scaler exists for
 Kaggle's T4, which has no bfloat16. It was first run by forcing it on the local card: 100 real S25

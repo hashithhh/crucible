@@ -22,3 +22,7 @@ crucible_feasibility.json
 
 # Phase 3 training checkpoints: ~300 MB each, reproducible from the log
 checkpoints/
+
+# Console output of detached training runs; the per-run .jsonl logs are the record
+results/phase*/*_run.log
+results/phase*/*_run.err

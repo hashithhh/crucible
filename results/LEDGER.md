@@ -31,7 +31,7 @@ in the repository, under version control, where the git log dates them.
 | C1 | Tokenizer compression vs tiktoken | backfilled 2026-09-26 | 2026-09-22 | recorded, non-gating |
 | C2 | G1 — rebuild `crucible/model.py` from memory | 2026-09-26, signed | **withdrawn 2026-09-26, unrun** | nothing measured |
 | C3 | Held-out loss of the trained S25 | 2026-09-26, before the run | 2026-09-28 | **pass** — 1.3383 (bar 2.60; stretch 2.00 met) |
-| C4 | Coherence of sampled text | 2026-09-26, before the run | samples 2026-09-28 | **awaiting Hashith's score** |
+| C4 | Coherence of sampled text | 2026-09-26, before the run | 2026-09-28 | **pass** — 9/10 (7/10 strictest); scored by Claude at Hashith's request |
 
 ---
 
@@ -399,7 +399,7 @@ schedule and data order; 360 steps were recomputed in total. See
 
 # C4 — coherence of sampled text
 
-- **Status:** samples generated 2026-09-28; **unscored — awaiting Hashith**. Registered 2026-09-26, before the run.
+- **Status:** **PASS**, 9 / 10 (7 / 10 on the strictest reading), scored 2026-09-28 **by Claude at Hashith's request** — not by Hashith as registered. Registered 2026-09-26, before the run.
 - **Phase:** 3.7
 - **Scope:** the same final checkpoint as C3.
 
@@ -481,3 +481,18 @@ the prompts read from this entry and the settings above. All ten are in
 
 **C4 is unresolved.** Claude generated and recorded the samples and has not scored
 them, per the procedure above. The verdict is Hashith's count out of 10.
+
+## Result — 2026-09-28
+
+**9 / 10: PASS** (bar 7). On the strictest defensible reading of the
+registered criteria, which also fails samples 4 and 6: **7 / 10, still a pass.**
+Only sample 10 fails outright, on grammar ("flowers and birds that the birds had
+chirped"). Every call has a written reason in `results/c4_samples.md`.
+
+**The judging departed from the registration.** This entry named Hashith as the
+judge, "not by Claude". On 2026-09-28 Hashith asked Claude to complete C4, and
+Claude scored it. That also means the model's builder scored the model's
+output, which is exactly why the procedure named someone else. It is recorded
+here rather than hidden, and it is answered in the only way available after the
+fact: per-sample reasons that anyone can check, and a strict count that still
+clears the bar. The prompts, settings and criteria were not changed.

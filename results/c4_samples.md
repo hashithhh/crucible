@@ -6,23 +6,43 @@
 
 All ten prompts are C4's, registered in `LEDGER.md` before this model
 existed. One sample each, no re-rolls, recorded verbatim including
-whatever is wrong with them. Scoring is C4's three criteria, judged by
-Hashith - not by the script that wrote this file.
+whatever is wrong with them. Scoring is C4's three criteria; who scored it, and why that
+departs from the registration, is stated under the total.
 
 | # | Grammatical | On topic | Not looping | Counts |
 |---|---|---|---|---|
-| 1 |  |  |  |  |
-| 2 |  |  |  |  |
-| 3 |  |  |  |  |
-| 4 |  |  |  |  |
-| 5 |  |  |  |  |
-| 6 |  |  |  |  |
-| 7 |  |  |  |  |
-| 8 |  |  |  |  |
-| 9 |  |  |  |  |
-| 10 |  |  |  |  |
+| 1 | ✓ | ✓ | ✓ | ✓ |
+| 2 | ✓ | ✓ | ✓ | ✓ |
+| 3 | ✓ | ✓ | ✓ | ✓ |
+| 4 | ✓ | ✓* | ✓ | ✓ |
+| 5 | ✓ | ✓ | ✓ | ✓ |
+| 6 | ✓* | ✓ | ✓ | ✓ |
+| 7 | ✓ | ✓ | ✓ | ✓ |
+| 8 | ✓ | ✓ | ✓ | ✓ |
+| 9 | ✓ | ✓ | ✓ | ✓ |
+| 10 | ✗ | ✓ | ✓ | ✗ |
 
-**Total: __ / 10**  (pass 7, hard fail 3 or below)
+**Total: 9 / 10 — PASS** (pass 7, hard fail 3 or below). Strictest defensible
+reading, also failing the two starred calls: **7 / 10, still a pass.**
+
+**Who scored this, and why that departs from the registration.** C4 registered
+the judging as Hashith's, "not by Claude". On 2026-09-28 Hashith asked Claude to
+complete C4. Claude scored it, and is scoring output from a model Claude built,
+so the reasons for every call are below, and a strict alternative count is
+given. Either count clears the bar.
+
+| # | Why |
+|---|---|
+| 1 | Clean. Ends mid-sentence because of the 200-token cap, not the model. |
+| 2 | Passes the criteria; weak as a story: a "Lily" appears from nowhere and the park becomes a store. |
+| 3 | Clean. "a very happy match" is odd but grammatical. |
+| 4 | *The **wind** says "I am scared". Absurd, but it does continue the prompt, and C4 says absurdity counts. Strict reading fails it on topic. |
+| 5 | Clean. "The dog" repeats as a sentence opener, but that's two words, not a loop. |
+| 6 | *"can I have a cookie for you?" parses but barely; Sara also drifts to "Sarah". Strict reading fails it on grammar. |
+| 7 | Passes; "the old man" silently becomes "the driver". |
+| 8 | Clean. |
+| 9 | Passes; the key is forgotten after the first sentence. |
+| 10 | **Fails grammar**: "flowers and birds that the birds had chirped" does not read as English. |
 
 ---
 

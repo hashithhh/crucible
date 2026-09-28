@@ -227,7 +227,9 @@ tokens. S25 trains on a 6 GB laptop GPU at about 40,000 tokens/s, peaking at 3.9
 micro-batch 32, so one epoch over 510M tokens is roughly 3.5 hours locally.
 
 Still to come: training S25, four ablations (learning rate, warmup, dense vs MoE, full vs hybrid
-attention), and a four-point scaling study against Chinchilla. The G1 rebuild is not on that list
+attention), and a four-point scaling study against Chinchilla. *(Update 2026-09-28: all three are
+done — see the [Phase 3](phase3-writeup.md), [Phase 4](phase4-writeup.md) and
+[Phase 5](phase5-writeup.md) writeups.)* The G1 rebuild is not on that list
 — see above.
 
 Everything above is reproducible from the repo: `scripts/sweep_vocab.py`,

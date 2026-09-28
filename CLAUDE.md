@@ -1,8 +1,9 @@
 # Crucible — operating rules for this repo
 
 Crucible is a ~25M-parameter LLM trained from scratch (ADR-0006; the target
-was ~100M until the data budget was measured). Phase 1 is the byte-level BPE
-tokenizer.
+was ~100M until the data budget was measured). **All five phases are complete
+as of 2026-09-28**: tokenizer, transformer, training run, ablations, scaling
+study.
 
 ## Authorship — read this first
 
@@ -122,11 +123,11 @@ able to show the loss curve, the samples, and how both were produced.
    survived three stops for low memory and a 285-minute machine sleep,
    resuming exactly each time; 360 steps were recomputed. In hindsight C3's
    bars were easy — crossed by step 750 — and were not moved.
-8. **3.7 Sample from it — samples done, C4 UNSCORED.** Ten samples from the
-   registered prompts are in `results/c4_samples.md`, generated 2026-09-28,
-   one each, no re-rolls. They read as coherent TinyStories-style English,
-   but **C4's verdict is Hashith's count out of 10** and it has not been
-   given. This item closes when it is.
+8. ~~**3.7 Sample from it**~~ **done 2026-09-28 — C4: pass, 9/10** (7/10 on
+   the strictest reading), **scored by Claude at Hashith's request**, departing
+   from the registration that named Hashith as judge; recorded in the ledger.
+   Ten samples from the registered prompts, one each, no re-rolls, every
+   call reasoned in `results/c4_samples.md`; only sample 10 fails outright.
 
 Carried over because nothing else covers them:
 
@@ -150,9 +151,10 @@ Carried over because nothing else covers them:
     Hashith scoped the project down on 2026-09-28 ("keep this a resume
     project, don't overcook"), and a Kaggle session is not worth it for a
     number the local measurement already bounds. Not measured, not claimed.
-12. ~~**A Phase 3 writeup**~~ **done 2026-09-28** — `docs/phase3-writeup.md`.
-    Two markers remain pending by design: C4's count and the sentence saying
-    who scored it.
+12. ~~**A Phase 3 writeup**~~ **done 2026-09-28** — `docs/phase3-writeup.md`,
+    complete; no pending markers.
+
+**Phase 3 closes 2026-09-28**: eleven items done, item 11's T4 half deferred.
 
 **C3 and C4 were registered 2026-09-26** (`de8ae8a`), before the run, with
 thresholds proposed by Claude and set without Hashith's review. Both entries

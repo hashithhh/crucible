@@ -78,5 +78,19 @@
       "new_tokens": 76,
       "hit_separator": true
     }
-  ]
+  ],
+  "score": {
+    "count": 9,
+    "strict_count": 7,
+    "pass_at": 7,
+    "verdict": "pass",
+    "failed": [
+      10
+    ],
+    "strict_also_failed": [
+      4,
+      6
+    ],
+    "scored_by": "Claude, at Hashith's request on 2026-09-28; the registration named Hashith as judge"
+  }
 }
