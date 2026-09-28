@@ -1,0 +1,11 @@
+{
+  "size": "S3",
+  "params": 3672576,
+  "steps": 1121,
+  "tokens": 73465856,
+  "val_loss": 2.1616,
+  "tokens_per_s": 164251,
+  "seconds_last_process": 464.8,
+  "resumed": false,
+  "date": "2026-09-28"
+}

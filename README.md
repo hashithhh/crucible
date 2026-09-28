@@ -14,7 +14,7 @@ says so; see `CLAUDE.md` for what that changes.
 
 ## Status
 
-**233 passed, 1 skipped** (`pytest`; the corpus-wide round-trip runs under
+**255 passed, 1 skipped** (`pytest`; the corpus-wide round-trip runs under
 `--runslow`).
 
 | Phase | What | State |
@@ -23,7 +23,7 @@ says so; see `CLAUDE.md` for what that changes.
 | 2 | Transformer: RMSNorm, RoPE, KV cache, sampling | done; the from-memory rebuild check was withdrawn unrun |
 | 3 | Train S25 on TinyStories | trained — [writeup](docs/phase3-writeup.md) |
 | 4 | Ablations on S25: LR, warmup, MoE, hybrid attention | done — [writeup](docs/phase4-writeup.md) |
-| 5 | Scaling ladder vs Chinchilla | — |
+| 5 | Scaling study vs Chinchilla | done — [writeup](docs/phase5-writeup.md) |
 
 Phase 3 result: one epoch, 6,561 steps, final held-out loss **1.3383
 nats/token (0.517 bits/byte)** against a bigram baseline of 3.6190. Checks and
@@ -59,6 +59,7 @@ pytest
 | 0007 | Architecture constants | accepted — RoPE base 10k, RMSNorm eps 1e-6, init 0.02, GELU, pre-norm, no biases |
 | 0008 | Training hyperparameters | accepted — 65,536-token batch, AdamW, peak LR 6e-4 cosine to 6e-5, bf16 / fp16 + loss scaler |
 | 0009 | Phase 4 ablation protocol | accepted — 820-step runs, seed-gap noise floor, 4-expert top-1 MoE, alternating 128-window attention |
+| 0010 | Phase 5 scaling study | accepted — S3/S7/S13 at ~20 tokens/param plus S25; predicted exponent 0.28–0.34, measured 0.74 |
 
 ## Rules
 

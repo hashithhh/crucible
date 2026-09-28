@@ -84,6 +84,28 @@ def fit_power_law(n: list[float], loss: list[float]) -> dict:
     return best
 
 
+def sensitivity(points: list[dict], fit: dict) -> dict:
+    """How far the exponent moves with the floor, since one degree of freedom
+    lets E and gamma trade off. Also the fit without S25, the one point not
+    trained at exactly 20 tokens/param (ADR-0010)."""
+    n = np.asarray([p["params"] for p in points], dtype=float)
+    loss = np.asarray([p["val_loss"] for p in points], dtype=float)
+    fixed = []
+    for e in (0.0, 0.5, 0.8, 1.0):
+        slope, intercept = np.polyfit(np.log(n), np.log(loss - e), 1)
+        pred = e + np.exp(intercept) * n**slope
+        rms = float(np.sqrt(((pred - loss) ** 2).mean()))
+        fixed.append({"E_fixed": e, "gamma": round(-slope, 3), "rms": round(rms, 4)})
+    best_rms = float(np.sqrt(fit["sse"] / len(points)))
+    at_20 = [i for i, p in enumerate(points) if p["size"] != "S25"]
+    sub = fit_power_law(n[at_20].tolist(), loss[at_20].tolist())
+    return {
+        "fits_with_E_fixed": fixed,
+        "best_fit_rms": round(best_rms, 4),
+        "without_s25": {"E": round(sub["E"], 3), "gamma": round(sub["gamma"], 3)},
+    }
+
+
 def run(name: str, device: torch.device) -> dict:
     result_path = OUT / f"{name}.json"
     if result_path.is_file():
@@ -164,8 +186,14 @@ def summarise() -> dict | None:
         "gains_shrink": all(b < a for a, b in zip(gains, gains[1:], strict=False)),
         "gains_between_sizes": gains,
         "caveat": "4 points, 3 fitted parameters: one degree of freedom.",
+        "sensitivity": sensitivity(points, fit),
         "date": time.strftime("%Y-%m-%d"),
     }
+    summary["verdict"] = (
+        "Chinchilla effective-exponent prediction "
+        + ("confirmed" if summary["in_band"] else "NOT confirmed")
+        + f" (gamma {fit['gamma']:.2f} vs [{low}, {high}])"
+    )
     path = ROOT / "results" / "phase5_scaling.json"
     path.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
 

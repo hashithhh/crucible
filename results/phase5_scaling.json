@@ -1,0 +1,83 @@
+{
+  "protocol": "ADR-0010: ~20 tokens/param per size; S25 from Phase 3 (16.5)",
+  "points": [
+    {
+      "size": "S3",
+      "params": 3672576,
+      "tokens": 73465856,
+      "val_loss": 2.1616,
+      "tokens_per_param": 20.0
+    },
+    {
+      "size": "S7",
+      "params": 8032640,
+      "tokens": 160628736,
+      "val_loss": 1.6871,
+      "tokens_per_param": 20.0
+    },
+    {
+      "size": "S13",
+      "params": 14949120,
+      "tokens": 298975232,
+      "val_loss": 1.4723,
+      "tokens_per_param": 20.0
+    },
+    {
+      "size": "S25",
+      "params": 26223616,
+      "tokens": 429981696,
+      "val_loss": 1.3383,
+      "tokens_per_param": 16.4
+    }
+  ],
+  "fit": {
+    "E": 1.0902,
+    "K": 79169.226,
+    "gamma": 0.7416,
+    "sse": 0.0
+  },
+  "chinchilla_band": [
+    0.28,
+    0.34
+  ],
+  "in_band": false,
+  "loss_falls_with_size": true,
+  "gains_shrink": true,
+  "gains_between_sizes": [
+    0.4745,
+    0.2148,
+    0.134
+  ],
+  "caveat": "4 points, 3 fitted parameters: one degree of freedom.",
+  "sensitivity": {
+    "fits_with_E_fixed": [
+      {
+        "E_fixed": 0.0,
+        "gamma": 0.244,
+        "rms": 0.0433
+      },
+      {
+        "E_fixed": 0.5,
+        "gamma": 0.348,
+        "rms": 0.0347
+      },
+      {
+        "E_fixed": 0.8,
+        "gamma": 0.472,
+        "rms": 0.0244
+      },
+      {
+        "E_fixed": 1.0,
+        "gamma": 0.627,
+        "rms": 0.0111
+      }
+    ],
+    "best_fit_rms": 0.0024,
+    "without_s25": {
+      "E": 1.134,
+      "gamma": 0.791
+    }
+  },
+  "date": "2026-09-28",
+  "verdict": "Chinchilla effective-exponent prediction NOT confirmed (gamma 0.74 vs [0.28, 0.34])"
+}

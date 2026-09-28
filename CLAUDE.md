@@ -33,7 +33,7 @@ What this changes, concretely:
 - Tests touch the **public interface only** (`vocab_size`, `train`, `encode`,
   `decode`, `register_special_tokens`, `save`, `load`). Internal structure is
   unconstrained.
-- ADR for every constant. No magic numbers. ADRs 0001–0009 are
+- ADR for every constant. No magic numbers. ADRs 0001–0010 are
   accepted.
 - Apache-2.0.
 - Every commit message states who wrote the code in it.
@@ -191,6 +191,22 @@ That rule, fixed before the runs, is the pre-registration; no ledger entries.
 Budget: 6 runs, 2.24 GPU-hours actual, none interrupted (run as a detached
 process after the session's memory reaper stopped every in-session attempt). **Not in Phase 4:** multiple seeds per
 variant, full-epoch confirmations, LR sweeps. Phase 5 is the scaling ladder.
+
+## Phase 5 definition of done
+
+A four-point scaling study against Chinchilla, sized like Phase 4
+(ADR-0010, written before any run).
+
+1. ~~**5.0 ADR-0010**~~ **done 2026-09-28** — S3/S7/S13 at ~20 tokens/param,
+   S25 reused from Phase 3; revises ADR-0006 §3's one-epoch-per-size plan.
+2. ~~**5.1 Train the ladder**~~ **done 2026-09-28** — S3 2.1616, S7 1.6871,
+   S13 1.4723, S25 1.3383; 1.9 GPU-hours, none interrupted.
+3. ~~**5.2 Fit and compare**~~ **done** — `L = 1.090 + K·N^−0.742`. **The
+   Chinchilla prediction (γ in [0.28, 0.34]) is NOT confirmed.** Checked for
+   fragility: band-compatible fits need a floor ≤ ~0.5 and fit 15-18× worse,
+   and dropping the under-trained S25 gives γ = 0.79. Loss falls with size
+   with shrinking gains. `results/phase5_scaling.json`.
+4. ~~**5.3 Writeup**~~ **done** — `docs/phase5-writeup.md`.
 
 **Not in Phase 3:** the ablations and the scaling ladder — Phases 4 and 5,
 sized in ADR-0006 §2 and §3.

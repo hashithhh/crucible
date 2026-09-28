@@ -1,0 +1,11 @@
+{
+  "size": "S13",
+  "params": 14949120,
+  "steps": 4562,
+  "tokens": 298975232,
+  "val_loss": 1.4723,
+  "tokens_per_s": 65145,
+  "seconds_last_process": 4695.1,
+  "resumed": false,
+  "date": "2026-09-28"
+}

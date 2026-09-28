@@ -1,0 +1,11 @@
+{
+  "size": "S7",
+  "params": 8032640,
+  "steps": 2451,
+  "tokens": 160628736,
+  "val_loss": 1.6871,
+  "tokens_per_s": 97234,
+  "seconds_last_process": 1671.5,
+  "resumed": false,
+  "date": "2026-09-28"
+}
