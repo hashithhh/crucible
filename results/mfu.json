@@ -1,0 +1,18 @@
+{
+  "date": "2026-09-28",
+  "gpu": "NVIDIA GeForce RTX 4050 Laptop GPU",
+  "dtype": "bfloat16",
+  "params": 26223616,
+  "flops_per_token": 182507520,
+  "tokens_per_s": 43662,
+  "achieved_tflops": 7.969,
+  "matmul_ceiling_tflops": 24.658,
+  "mfu": 0.3232,
+  "source": "train_log.jsonl, median of 692 step intervals",
+  "adr_0006_assumed_band": [
+    0.25,
+    0.4
+  ],
+  "t4_measured": false,
+  "note": "T4 MFU is NOT measured here: no Turing GPU on this machine. Item 11 of the Phase 3 definition of done stays open for the Kaggle half."
+}

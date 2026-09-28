@@ -1,0 +1,82 @@
+{
+  "date": "2026-09-28",
+  "checkpoint": "checkpoints/final.pt",
+  "step": 6561,
+  "val_loss_at_save": 1.3382568102962566,
+  "temperature": 0.8,
+  "top_p": 0.95,
+  "max_new_tokens": 200,
+  "seed": 1337,
+  "samples": [
+    {
+      "n": 1,
+      "prompt": "Once upon a time, there was a little girl named Lily.",
+      "continuation": " She loved to eat snacks, especially crackers and cheese. One day, she went to the kitchen and saw her mom washing dishes. She asked her mom if she could help, but her mom said no because the floor was very dirty.\nLily was sad and didn't understand why she couldn't help. She started to cry and said, \"I want to help, Mommy. Please let me help.\" But her mom just shook her head and said, \"No, Lily. You can't help with the dishes. It's not good for you.\"\nLily got even more angry and threw the dishes on the floor. Her mom said, \"Lily, you need to learn to share and be kind to others. Now, we have to clean up and then we can have a snack.\" Lily felt bad and said, \"I'm sorry, Mommy. I will share and be kind to others.\" And she learned that sometimes it's better to",
+      "new_tokens": 200,
+      "hit_separator": false
+    },
+    {
+      "n": 2,
+      "prompt": "Tom and Ben were playing in the park when they",
+      "continuation": " saw a big tank with some people. They ran to it and saw many carts with different toys and games. They wanted to play with them.\n\"Look, there are so many carts!\" Tom said, pointing at a cart with a red car. \"Let's join them!\"\n\"But that's not fair!\" Lily said, pointing at the cart. \"We should all play with the carts!\"\nThey started to argue and pull the cart from each other. They did not notice that the people in the store looked angry and sad. They did not notice that their neighbors were standing behind them.\nSuddenly, a big truck came to the park and stopped near them. It stopped near the carts and the driver got out. He looked surprised and angry. He saw the carts and the signs that said \"Stop\".\n\"Hey, what are you doing here?\" the dri",
+      "new_tokens": 200,
+      "hit_separator": false
+    },
+    {
+      "n": 3,
+      "prompt": "The cat sat on the mat and looked at",
+      "continuation": " it with surprise. Suddenly, a puppy came running around the corner. The cat was so happy to see the puppy! It ran around the mat with the puppy and they had lots of fun together.\nThe cat and the puppy were best friends. Every day, the cat would go to the mat and they would play together. The mat was a very happy match!",
+      "new_tokens": 75,
+      "hit_separator": true
+    },
+    {
+      "n": 4,
+      "prompt": "\"I am scared,\" said",
+      "continuation": " the wind. \"My shirt is too small.\"\nThe wind blew harder. It broke free from the tree. The leaves flew away. Timmy was sad. He wanted to play outside, but the wind was too strong.\nTimmy's friends came to help him. They ran outside and saw the tree. They were happy. Timmy was not scared anymore. He thanked his friends and they all played together. The wind was happy too, and they all had a great day.",
+      "new_tokens": 99,
+      "hit_separator": true
+    },
+    {
+      "n": 5,
+      "prompt": "One day, a big dog came to the",
+      "continuation": " park. The dog saw the ball and wanted to play with it. The dog ran fast and jumped high. The dog was very good at playing with the ball.\nThe dog met a cat and said, \"Hi, cat! Can I play with you?\" The cat said, \"Yes, dog! Let's play together!\" They played with the ball and had lots of fun. The dog and the cat became good friends.",
+      "new_tokens": 86,
+      "hit_separator": true
+    },
+    {
+      "n": 6,
+      "prompt": "Sara wanted to bake a cake, so she",
+      "continuation": " asked her mom if she could bake a cake. Her mom said yes, and helped her put everything in the oven to bake. \nWhile the cake was baking, Sarah's dad came into the kitchen and said, \"Sara, can I have a cookie for you?\" Sarah's mom gave her a cookie, and Sarah was so happy. She said, \"Thank you, mom!\" \nThen, Sarah and her dad both enjoyed the delicious cake. It was so delicious and everyone enjoyed it. Sarah was very glad that her baking was so flexible and enjoyed eating it.",
+      "new_tokens": 126,
+      "hit_separator": true
+    },
+    {
+      "n": 7,
+      "prompt": "The old man had a red box. Inside the box was",
+      "continuation": " a big surprise. It was a big toy car! The driver was so happy that he gave the box a big hug.\nThe driver went outside and the car drove around the town. They had lots of fun. The car went faster and faster until it went so far it had to stop.\nThe car drove so fast that it was a blur. The car got to the side of the road and stopped right in front of a big pile of leaves. The driver jumped in the pile of leaves and started to speed around the box. It raced down the path until it was out of sight.\nThe driver had a great day with the big box. He looked at it and smiled. He knew it was a very special toy.",
+      "new_tokens": 161,
+      "hit_separator": true
+    },
+    {
+      "n": 8,
+      "prompt": "It was raining, so the children",
+      "continuation": " started to run. They ran and ran until they were so tired they could barely keep themselves still.\nThe family stopped and looked around. At last, the sun came out and the sky was clear. The children looked up at the sky and smiled. They knew that when they had put their feet in the rain, they would be able to go to the park.",
+      "new_tokens": 81,
+      "hit_separator": true
+    },
+    {
+      "n": 9,
+      "prompt": "Max found a shiny key under the",
+      "continuation": " couch. He asked his friend, Bunny, for help. Bunny thought that was a good idea.\nBunny said, \"I recommend that we go to the store and buy a new toy!\" Max was excited and said, \"Yes, please!\" They went to the store and found a new toy. Max and Bunny were happy, and they played with the new toy all day.",
+      "new_tokens": 85,
+      "hit_separator": true
+    },
+    {
+      "n": 10,
+      "prompt": "Anna's mum said, \"You must not",
+      "continuation": " be so nosy. It is good to be curious, but it is also important to stay safe.\"\nSo the next day, Anna and her mum went out for a walk. They stopped to look at the beautiful flowers and birds that the birds had chirped.\nAnna was so excited! She knew that it was important to stay safe and not be so nosy.",
+      "new_tokens": 76,
+      "hit_separator": true
+    }
+  ]
+}

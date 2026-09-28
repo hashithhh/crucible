@@ -1,26 +1,36 @@
-# Crucible — Phase 1: BPE Tokenizer
+# Crucible
 
-Rung 1 of the Crucible ladder: a ~25M-parameter LLM trained from scratch.
-This phase is a byte-level BPE tokenizer, standard library only.
+A ~25M-parameter language model trained from scratch: byte-level BPE
+tokenizer, decoder-only transformer, training run, then ablations and a
+scaling study.
 
-The target was ~100M until ADR-0006 (2026-09-22): TinyStories supplies 510M
-unique tokens, which at ~20 tokens/parameter supports ~25M, not 100M.
+The target was ~100M until ADR-0006 (2026-09-22) sized the model to the data.
+TinyStories measured **432M unique tokens** after deduplication (the estimate
+was 510M; 15% of stories are exact duplicates), which supports S25 at 26.2M
+parameters.
+
+**The code in this repo was written by Claude, not by hand.** Every commit
+says so; see `CLAUDE.md` for what that changes.
 
 ## Status
 
-Phase 1 of 5 — **103/103 green** as of 2026-09-22, including the corpus-wide
-round-trip over all 21,990 stories (`pytest --runslow`, 52 s; the default run
-skips it and reports 102 passed, 1 skipped). Tokenizer implementation written
-by Claude, not hand-written; see `CLAUDE.md` for what that changes.
+**233 passed, 1 skipped** (`pytest`; the corpus-wide round-trip runs under
+`--runslow`).
 
-Vocabulary size is decided: **2,048** (3.73 bytes/token held-out, 1.05M
-embedding parameters at ADR-0006's d_model=512). See ADR-0001 and
-`results/vocab_sweep.png`; regenerate with `python scripts/sweep_vocab.py`.
+| Phase | What | State |
+|---|---|---|
+| 1 | Byte-level BPE tokenizer, 2,048 merges | done — [writeup](docs/phase1-writeup.md) |
+| 2 | Transformer: RMSNorm, RoPE, KV cache, sampling | done; the from-memory rebuild check was withdrawn unrun |
+| 3 | Train S25 on TinyStories | trained — [writeup](docs/phase3-writeup.md) |
+| 4 | Ablations on S25 | next |
+| 5 | Scaling ladder vs Chinchilla | — |
 
-Compared against tiktoken by measurement (C1, `results/c1_tiktoken.md`) and
-against minbpe by reading its source (`docs/minbpe-differences.md`).
-
-Remaining in Phase 1: the writeup.
+Phase 3 result: one epoch, 6,561 steps, final held-out loss **1.3383
+nats/token (0.517 bits/byte)** against a bigram baseline of 3.6190. Checks and
+their pre-registered bars are in [`results/LEDGER.md`](results/LEDGER.md):
+C3 (held-out loss) **passed**; C4 (sample coherence) has its ten samples in
+`results/c4_samples.md` and is **not yet scored**. MFU on the local card was
+32.3%; the T4 measurement is still owed.
 
 ## Run the tests
 
@@ -47,6 +57,7 @@ pytest
 | 0005 | Pre-tokenization pattern | accepted — GPT-4 (cl100k), translated to stdlib `re` |
 | 0006 | Model size and data | accepted — ~25M (S25: d512, 8 layers, 8 heads) on TinyStories only |
 | 0007 | Architecture constants | accepted — RoPE base 10k, RMSNorm eps 1e-6, init 0.02, GELU, pre-norm, no biases |
+| 0008 | Training hyperparameters | accepted — 65,536-token batch, AdamW, peak LR 6e-4 cosine to 6e-5, bf16 / fp16 + loss scaler |
 
 ## Rules
 

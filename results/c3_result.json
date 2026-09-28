@@ -1,0 +1,21 @@
+{
+  "date": "2026-09-28",
+  "checkpoint": "final.pt",
+  "step": 6561,
+  "horizon": 6561,
+  "dry_run": false,
+  "val_tokens": 2177071,
+  "val_loss": 1.3383,
+  "bits_per_byte": 0.5172,
+  "baselines": {
+    "uniform": 7.6251,
+    "unigram": 6.0734,
+    "bigram": 3.619
+  },
+  "hard_fail_at": 3.619,
+  "pass_at": 2.6,
+  "stretch_at": 2.0,
+  "met_stretch": true,
+  "verdict": "pass",
+  "thresholds_from": "results/LEDGER.md, C3, registered 2026-09-26"
+}

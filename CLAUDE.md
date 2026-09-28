@@ -113,33 +113,41 @@ able to show the loss curve, the samples, and how both were produced.
 6. ~~**3.5 Logging:** loss, LR, grad norm, tokens/sec, GPU memory~~ **done
    2026-09-26** — JSONL to `results/train_log.jsonl`, one record per logged
    step plus `run` / `eval` / `paused` / `done` lines, asserted by a test.
-7. **3.6 Train S25 to convergence** (ADR-0006). **C3 and C4 registered in
-   `results/LEDGER.md` before the run starts**, per the ledger's rule 1. Their
-   targets are not recorded anywhere in this repo; see the note below.
-8. **3.7 Sample from it.** Coherent text, or the run failed — this is the
-   whole point of Phase 2's sampler and the first evidence the pipeline works
-   rather than merely runs.
+7. ~~**3.6 Train S25 to convergence**~~ **done 2026-09-28** — all 6,561
+   steps, final held-out loss **1.3383** (0.517 bits/byte). **C3: pass**
+   (bar 2.60, stretch 2.00 also met; `results/c3_result.json`). The run
+   survived three stops for low memory and a 285-minute machine sleep,
+   resuming exactly each time; 360 steps were recomputed. In hindsight C3's
+   bars were easy — crossed by step 750 — and were not moved.
+8. **3.7 Sample from it — samples done, C4 UNSCORED.** Ten samples from the
+   registered prompts are in `results/c4_samples.md`, generated 2026-09-28,
+   one each, no re-rolls. They read as coherent TinyStories-style English,
+   but **C4's verdict is Hashith's count out of 10** and it has not been
+   given. This item closes when it is.
 
 Carried over because nothing else covers them:
 
 9. ~~**ADR-0008 — training hyperparameters**~~ **done 2026-09-26** —
    `docs/adr/0008-training-hyperparameters.md`. Borrowed values say where
    from; `peak_lr` 6e-4 is the one carrying real risk and is the only
-   constant with a pre-stated revision trigger.
-10. **Tests, public behaviour only.** Exact resume (checkpoint, resume,
-    identical loss), shard-reader boundaries, LR schedule shape. Same standard
-    as Phases 1 and 2.
-11. **MFU measured on a T4, `model_budget.py` re-run with it.** ADR-0006's T4
-    hours assume 25-40% MFU and it records this as the first thing Phase 3
-    owes. The local 4050 figure (~40k tokens/s, ~7.3 TFLOP/s) suggests that
-    band is optimistic.
-12. **A Phase 3 writeup** with the numbers, stating how the code was produced.
+   constant with a pre-stated revision trigger. It did not fire.
+10. ~~**Tests, public behaviour only**~~ **done** — exact resume (with a
+    control that must fail), shard-reader boundaries, LR schedule shape, the
+    C3/C4 ledger links, and MFU throughput under a stall and a resume.
+11. **MFU — local half done, T4 half OPEN.** Local RTX 4050: **32.3%**
+    (`results/mfu.json`) against a *measured* dense-bf16 matmul ceiling of
+    24.66 TFLOP/s, 43,662 tokens/s, inside the 25-40% band ADR-0006 assumed.
+    The earlier note here that the band looked optimistic was wrong; it used
+    no measured ceiling. **The T4 figure is still owed** — no Turing GPU on
+    this machine — and so is its `model_budget.py` re-run. The fp16 +
+    loss-scaler path has never executed.
+12. ~~**A Phase 3 writeup**~~ **done 2026-09-28** — `docs/phase3-writeup.md`.
+    Two markers remain pending by design: C4's count and the sentence saying
+    who scored it.
 
-**C3 and C4 are undefined.** The checklist says "record C3, C4" but no target
-for either exists in this repo or in any vault on this machine — the same gap
-C1 and C2 hit. Candidates, given 3.6 and 3.7: **C3 = held-out loss** against a
-pre-registered value, **C4 = sample coherence** under a stated judgement.
-Both must be written down before the run, or they are not checks.
+**C3 and C4 were registered 2026-09-26** (`de8ae8a`), before the run, with
+thresholds proposed by Claude and set without Hashith's review. Both entries
+say so.
 
 **Not in Phase 3:** the ablations and the scaling ladder — Phases 4 and 5,
 sized in ADR-0006 §2 and §3.
