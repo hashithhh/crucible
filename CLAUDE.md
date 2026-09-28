@@ -137,7 +137,7 @@ Carried over because nothing else covers them:
 10. ~~**Tests, public behaviour only**~~ **done** — exact resume (with a
     control that must fail), shard-reader boundaries, LR schedule shape, the
     C3/C4 ledger links, and MFU throughput under a stall and a resume.
-11. **MFU — local half done, T4 half OPEN.** Local RTX 4050: **32.3%**
+11. **MFU — local half done; T4 half DEFERRED 2026-09-28.** Local RTX 4050: **32.3%**
     (`results/mfu.json`) against a *measured* dense-bf16 matmul ceiling of
     24.66 TFLOP/s, 43,662 tokens/s, inside the 25-40% band ADR-0006 assumed.
     The earlier note here that the band looked optimistic was wrong; it used
@@ -146,7 +146,10 @@ Carried over because nothing else covers them:
     `scripts/kaggle_t4.py` writes `results/t4_check.json`, then
     `python scripts/model_budget.py --t4-mfu <mfu_vs_datasheet>` is the
     re-run. The script was dry-run locally (31.9% MFU against the measured
-    ceiling, agreeing with the 32.3% from the run log).
+    ceiling, agreeing with the 32.3% from the run log). **Deferred, not done:**
+    Hashith scoped the project down on 2026-09-28 ("keep this a resume
+    project, don't overcook"), and a Kaggle session is not worth it for a
+    number the local measurement already bounds. Not measured, not claimed.
 12. ~~**A Phase 3 writeup**~~ **done 2026-09-28** — `docs/phase3-writeup.md`.
     Two markers remain pending by design: C4's count and the sentence saying
     who scored it.
@@ -154,6 +157,36 @@ Carried over because nothing else covers them:
 **C3 and C4 were registered 2026-09-26** (`de8ae8a`), before the run, with
 thresholds proposed by Claude and set without Hashith's review. Both entries
 say so.
+
+## Phase 4 definition of done
+
+Four ablations against S25, sized to a 6 GB laptop and a resume: one short run
+per variant, one shared baseline, one noise check. **Scope set by Hashith on
+2026-09-28: "don't overcook or do over-engineering."** Not a research
+programme; if a step starts growing, cut it.
+
+**Protocol (ADR-0009, one page, written before any run):** every run is 820
+steps (1/8 epoch, 53.7M tokens, ~21 min locally) on ADR-0008's config with the
+cosine landing at step 820, same seed and data order as the baseline. The
+metric is held-out loss at step 820 on the full val split. A difference
+smaller than the baseline's seed-to-seed gap is reported as **no difference**.
+That rule, fixed before the runs, is the pre-registration; no ledger entries.
+
+1. **4.0 ADR-0009** — the protocol above and each variant's constants.
+2. **4.1 Baseline, two seeds** — the reference and the noise floor.
+3. **4.2 Learning rate: 2e-4** vs 6e-4. ADR-0008 flagged 6e-4 as the risky
+   constant and ~2e-4 as the argued alternative; this answers it.
+4. **4.3 Warmup: none** vs 200 steps. Whether warmup matters at all here.
+5. **4.4 Dense vs MoE: 4 experts, top-1 routing**, compute-matched to dense
+   (26.2M active). Smallest MoE that answers the question and fits 6 GB.
+6. **4.5 Full vs hybrid attention:** alternate layers use sliding-window
+   attention (window 128). Same parameters, less attention compute.
+7. **4.6 Results** — one table (`results/phase4_ablations.json`) and a short
+   writeup. Tests only where new model code could silently be wrong: the
+   sliding-window mask and MoE routing.
+
+Budget: 6 runs, about 2-2.5 GPU-hours. **Not in Phase 4:** multiple seeds per
+variant, full-epoch confirmations, LR sweeps. Phase 5 is the scaling ladder.
 
 **Not in Phase 3:** the ablations and the scaling ladder — Phases 4 and 5,
 sized in ADR-0006 §2 and §3.

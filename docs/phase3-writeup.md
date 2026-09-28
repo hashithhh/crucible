@@ -1,7 +1,7 @@
 # Crucible Phase 3 — training a 26M-parameter model, and the numbers that moved
 
 **Status:** Phase 3 trained and scored. C3 passed; C4's ten samples are recorded and **awaiting my
-score**; the T4 MFU measurement is still owed.
+score**; the T4 MFU measurement was deferred as out of scope.
 Repo: `github.com/hashithhh/crucible`
 **Date:** 2026-09-28
 
@@ -260,8 +260,9 @@ recorded verbatim. [pending: C4 scoring note — only say "I scored them" once H
 Kaggle's T4, which has no bfloat16. It was first run by forcing it on the local card: 100 real S25
 steps from the same seed tracked bf16 to within 0.0076. But no gradient overflowed in that window,
 so the scaler never had to skip a step, and it has still never run on an actual T4. MFU was
-measured on the local card only; the T4 figure that ADR-0006 said Phase 3 owes is still owed, now
-as a single script for a Kaggle notebook.
+measured on the local card only. The T4 figure ADR-0006 said Phase 3 owes was deferred: I scoped
+the project down to what a resume needs, and the local measurement already bounds it. A single
+script for a Kaggle notebook exists if it is ever wanted.
 
 **This is the third phase with a dropped or delegated check**, after the minbpe comparison in
 Phase 1 and the from-memory rebuild in Phase 2. This one is different in kind — the thresholds were
