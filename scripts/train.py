@@ -264,6 +264,7 @@ def train(
 
         optimizer.zero_grad(set_to_none=True)
         step_loss = 0.0
+        step_aux = 0.0
         for _ in range(cfg.accumulation):
             x_np, y_np = batches.next()
             x = torch.from_numpy(x_np).to(device)
@@ -277,8 +278,13 @@ def train(
             )
             # Divide before backward so the accumulated gradient is the mean
             # over the whole batch, not the sum over its micro-batches.
-            scaler.scale(loss / cfg.accumulation).backward()
+            # The MoE balancing loss (ADR-0009) joins the backward pass only;
+            # the logged loss stays pure cross-entropy, so it is comparable
+            # with dense runs. aux_loss() is 0.0 for a dense model.
+            aux = model.aux_loss()
+            scaler.scale((loss + aux) / cfg.accumulation).backward()
             step_loss += loss.item() / cfg.accumulation
+            step_aux += float(aux) / cfg.accumulation
 
         # Unscale before clipping: clipping a scaled gradient would clip
         # against a threshold that moves with the scaler (ADR-0008).
@@ -293,6 +299,7 @@ def train(
             "lr": lr,
             "loss": step_loss,
             "grad_norm": float(grad_norm),
+            **({"aux_loss": step_aux} if model_cfg.n_experts > 1 else {}),
             "tokens": (step + 1) * cfg.batch_tokens,
             "seconds": round(time.monotonic() - started, 2),
         }

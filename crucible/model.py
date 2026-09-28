@@ -31,12 +31,21 @@ class ModelConfig:
     norm_eps: float = 1e-6  # ADR-0007
     init_std: float = 0.02  # ADR-0007
     tie_embeddings: bool = True  # ADR-0006 counts parameters with tying
+    # Phase 4 ablations, ADR-0009. The defaults are dense S25 exactly, so
+    # every Phase 3 checkpoint loads and behaves as it did.
+    n_experts: int = 1  # 1 = the dense MLP; >1 = top-1 mixture of experts
+    moe_aux_coef: float = 0.01  # load-balancing loss weight (Switch Transformer)
+    window: int = 0  # 0 = full attention; >0 = odd layers see this many steps
 
     @property
     def head_dim(self) -> int:
         return self.d_model // self.n_heads
 
     def __post_init__(self) -> None:
+        if self.n_experts < 1:
+            raise ValueError(f"n_experts must be >= 1, got {self.n_experts}")
+        if self.window < 0:
+            raise ValueError(f"window must be >= 0, got {self.window}")
         if self.d_model % self.n_heads:
             raise ValueError(
                 f"d_model {self.d_model} not divisible by n_heads {self.n_heads}"
@@ -158,11 +167,15 @@ class CausalSelfAttention(nn.Module):
       forward over the whole prefix would produce for those steps.
     - Parameters: the four projections (queries, keys, values, output). No
       biases, no dropout, and no positional parameters (RoPE has none).
+    - With `window` > 0, step t attends only to steps t-window+1 .. t: a
+      sliding window (ADR-0009). The mask is the only difference, so the
+      parameters are identical to full attention.
     """
 
-    def __init__(self, config: ModelConfig) -> None:
+    def __init__(self, config: ModelConfig, window: int = 0) -> None:
         super().__init__()
         self.config = config
+        self.window = window
         d = config.d_model
         self.q_proj = nn.Linear(d, d, bias=False)
         self.k_proj = nn.Linear(d, d, bias=False)
@@ -195,9 +208,12 @@ class CausalSelfAttention(nn.Module):
         total = k.shape[-2]
         query_pos = torch.arange(total - steps, total, device=x.device).unsqueeze(1)
         key_pos = torch.arange(total, device=x.device).unsqueeze(0)
-        attended = F.scaled_dot_product_attention(
-            q, k, v, attn_mask=key_pos <= query_pos
-        )
+        allowed = key_pos <= query_pos
+        if self.window:
+            # Positions are absolute, so this is also right for a cached
+            # decode step, whose query sits at the end of a long cache.
+            allowed = allowed & (key_pos > query_pos - self.window)
+        attended = F.scaled_dot_product_attention(q, k, v, attn_mask=allowed)
 
         merged = attended.transpose(1, 2).reshape(batch, steps, self.config.d_model)
         return self.o_proj(merged)
@@ -222,6 +238,45 @@ class MLP(nn.Module):
         return self.down_proj(F.gelu(self.up_proj(x)))
 
 
+class MoE(nn.Module):
+    """Top-1 mixture of experts in place of the MLP (ADR-0009).
+
+    CONTRACT
+    - (B, T, D) -> (B, T, D), position-wise: each token goes to exactly one
+      expert, chosen from that token alone, so no token affects another's
+      output. There is no capacity limit and nothing is dropped.
+    - Each expert is a full-width `MLP`, so a token costs the same compute as
+      in the dense model; only capacity grows.
+    - The chosen expert's output is scaled by its router probability, which is
+      how the router receives a gradient through a hard choice.
+    - After each forward, `aux_loss` holds the Switch Transformer
+      load-balancing loss for that batch (1.0 when routing is perfectly even).
+    """
+
+    def __init__(self, config: ModelConfig) -> None:
+        super().__init__()
+        self.router = nn.Linear(config.d_model, config.n_experts, bias=False)
+        self.experts = nn.ModuleList(MLP(config) for _ in range(config.n_experts))
+        self.aux_loss: Tensor | None = None
+
+    def forward(self, x: Tensor) -> Tensor:
+        flat = x.reshape(-1, x.shape[-1])
+        probs = F.softmax(self.router(flat).float(), dim=-1)
+        gate, choice = probs.max(dim=-1)
+        out = torch.zeros_like(flat)
+        for e, expert in enumerate(self.experts):
+            idx = (choice == e).nonzero(as_tuple=True)[0]
+            if idx.numel():
+                y = expert(flat[idx]) * gate[idx].unsqueeze(-1)
+                out.index_add_(0, idx, y.to(out.dtype))
+        # Fraction of tokens routed to each expert, times the mean probability
+        # it received, summed and scaled by the expert count (Fedus et al.).
+        n = len(self.experts)
+        share = torch.bincount(choice, minlength=n).float() / choice.numel()
+        self.aux_loss = n * (share * probs.mean(dim=0)).sum()
+        return out.reshape(x.shape)
+
+
 class Block(nn.Module):
     """One transformer block: attention and MLP, each on a residual path.
 
@@ -231,15 +286,18 @@ class Block(nn.Module):
       from block input to block output carries the unmodified signal. A block
       whose sub-layer output projections are zeroed is therefore exactly the
       identity function.
-    - Holds two RMSNorms, one attention, one MLP.
+    - Holds two RMSNorms, one attention, one MLP (or MoE, when
+      `config.n_experts` > 1). With `config.window` set, odd-numbered layers
+      use sliding-window attention and even ones stay full (ADR-0009).
     """
 
-    def __init__(self, config: ModelConfig) -> None:
+    def __init__(self, config: ModelConfig, layer: int = 0) -> None:
         super().__init__()
+        window = config.window if layer % 2 == 1 else 0
         self.attn_norm = RMSNorm(config.d_model, config.norm_eps)
-        self.attn = CausalSelfAttention(config)
+        self.attn = CausalSelfAttention(config, window)
         self.mlp_norm = RMSNorm(config.d_model, config.norm_eps)
-        self.mlp = MLP(config)
+        self.mlp = MoE(config) if config.n_experts > 1 else MLP(config)
 
     def forward(
         self,
@@ -274,7 +332,7 @@ class Transformer(nn.Module):
         super().__init__()
         self.config = config
         self.embedding = nn.Embedding(config.vocab_size, config.d_model)
-        self.blocks = nn.ModuleList(Block(config) for _ in range(config.n_layers))
+        self.blocks = nn.ModuleList(Block(config, i) for i in range(config.n_layers))
         self.final_norm = RMSNorm(config.d_model, config.norm_eps)
         self.lm_head = nn.Linear(config.d_model, config.vocab_size, bias=False)
         self.apply(self._init_weights)
@@ -311,6 +369,17 @@ class Transformer(nn.Module):
         for layer, block in enumerate(self.blocks):
             x = block(x, positions, cache, layer)
         return self.lm_head(self.final_norm(x))
+
+    def aux_loss(self) -> Tensor | float:
+        """The weighted MoE load-balancing loss from the last forward; 0.0 if dense."""
+        losses = [
+            b.mlp.aux_loss
+            for b in self.blocks
+            if isinstance(b.mlp, MoE) and b.mlp.aux_loss is not None
+        ]
+        if not losses:
+            return 0.0
+        return self.config.moe_aux_coef * torch.stack(losses).mean()
 
     def n_params(self, non_embedding: bool = False) -> int:
         total = sum(p.numel() for p in self.parameters())
