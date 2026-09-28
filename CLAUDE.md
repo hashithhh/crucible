@@ -100,9 +100,12 @@ able to show the loss curve, the samples, and how both were produced.
 4. ~~**3.3 Mixed precision,** with the loss scaler understood rather than
    copied~~ **done 2026-09-26** — `pick_precision` picks bf16 or fp16+scaler
    from the hardware; the paragraph on why the scaler exists is in ADR-0008,
-   Precision. Verified on the local card: bf16, no scaler. **The fp16 path is
-   unexercised** — no Turing GPU here — so it is written and reasoned, not
-   demonstrated.
+   Precision. Verified on the local card: bf16, no scaler. **The fp16 + scaler
+   path was exercised 2026-09-28** by forcing it on the local card
+   (`--precision fp16`): 100 real S25 steps from the same seed track bf16 to
+   within 0.0076 (`results/fp16_check.json`), and a GPU test runs it end to
+   end. Not yet exercised: the scaler's overflow branch (no overflow occurred)
+   and the path on actual Turing hardware.
 5. ~~**3.4 Checkpointing and resume**, exact rather than approximate~~
    **done 2026-09-26** — `tests/test_train_resume.py` trains 8 steps
    uninterrupted, then 4 + resume, and asserts the losses match. The sampler's
@@ -139,8 +142,11 @@ Carried over because nothing else covers them:
     24.66 TFLOP/s, 43,662 tokens/s, inside the 25-40% band ADR-0006 assumed.
     The earlier note here that the band looked optimistic was wrong; it used
     no measured ceiling. **The T4 figure is still owed** — no Turing GPU on
-    this machine — and so is its `model_budget.py` re-run. The fp16 +
-    loss-scaler path has never executed.
+    this machine. It is now one command in a Kaggle T4 notebook:
+    `scripts/kaggle_t4.py` writes `results/t4_check.json`, then
+    `python scripts/model_budget.py --t4-mfu <mfu_vs_datasheet>` is the
+    re-run. The script was dry-run locally (31.9% MFU against the measured
+    ceiling, agreeing with the 32.3% from the run log).
 12. ~~**A Phase 3 writeup**~~ **done 2026-09-28** — `docs/phase3-writeup.md`.
     Two markers remain pending by design: C4's count and the sentence saying
     who scored it.

@@ -256,9 +256,12 @@ including when C3 turned out to be too easy (see above).
 and settings fixed in the ledger before the model was trained, one sample each, no re-rolls, and
 recorded verbatim. [pending: C4 scoring note — only say "I scored them" once Hashith has]
 
-**Some of the pipeline is written but unexercised.** The fp16 path with a loss scaler exists for
-Kaggle's T4, which has no bfloat16. There's no Turing GPU here, so it has never run. MFU was
-measured on the local card only; the T4 figure that ADR-0006 said Phase 3 owes is still owed.
+**Some of the pipeline is only partly exercised.** The fp16 path with a loss scaler exists for
+Kaggle's T4, which has no bfloat16. It was first run by forcing it on the local card: 100 real S25
+steps from the same seed tracked bf16 to within 0.0076. But no gradient overflowed in that window,
+so the scaler never had to skip a step, and it has still never run on an actual T4. MFU was
+measured on the local card only; the T4 figure that ADR-0006 said Phase 3 owes is still owed, now
+as a single script for a Kaggle notebook.
 
 **This is the third phase with a dropped or delegated check**, after the minbpe comparison in
 Phase 1 and the from-memory rebuild in Phase 2. This one is different in kind — the thresholds were

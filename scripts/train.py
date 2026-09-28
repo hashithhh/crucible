@@ -43,17 +43,39 @@ DEFAULT_CKPT = ROOT / "checkpoints"
 DEFAULT_LOG = ROOT / "results" / "train_log.jsonl"
 
 
-def pick_precision(device: torch.device) -> tuple[torch.dtype, bool]:
+PRECISIONS = ("auto", "bf16", "fp16", "fp32")
+
+
+def pick_precision(
+    device: torch.device, force: str | None = None
+) -> tuple[torch.dtype, bool]:
     """Choose the autocast dtype, and whether a loss scaler is needed.
 
     ADR-0008, Precision: bf16 where the hardware has it, fp16 plus a scaler
     where it does not (a T4 is Turing and does not). The scaler exists because
     fp16's 5 exponent bits let small gradients underflow to zero; bf16 has
     fp32's exponent range and so needs none.
+
+    `force` overrides the choice. It exists so the fp16 + scaler path -- the
+    one a T4 takes -- can be exercised on a card that would otherwise pick
+    bf16. Whatever is forced, fp16 always comes with a scaler: fp16 without
+    one is the configuration ADR-0008 says loses gradients.
     """
-    if device.type != "cuda":
+    if force not in (None, *PRECISIONS):
+        raise ValueError(f"precision must be one of {PRECISIONS}, got {force!r}")
+    if force in (None, "auto"):
+        if device.type != "cuda":
+            return torch.float32, False
+        if torch.cuda.is_bf16_supported():
+            return torch.bfloat16, False
+        return torch.float16, True
+    if force == "fp32":
         return torch.float32, False
-    if torch.cuda.is_bf16_supported():
+    if device.type != "cuda":
+        raise ValueError(f"{force} autocast needs a CUDA device, got {device.type}")
+    if force == "bf16":
+        if not torch.cuda.is_bf16_supported():
+            raise ValueError("bf16 forced on a GPU without bf16 support")
         return torch.bfloat16, False
     return torch.float16, True
 
@@ -97,7 +119,7 @@ def evaluate(
     for x_np, y_np in eval_windows(shards, cfg.micro_batch, cfg.context, max_batches):
         x = torch.from_numpy(x_np).to(device)
         y = torch.from_numpy(y_np).to(device)
-        with torch.autocast(device.type, dtype=dtype, enabled=device.type == "cuda"):
+        with torch.autocast(device.type, dtype=dtype, enabled=dtype != torch.float32):
             logits = model(x)
         # Reduce the loss in fp32 whatever the forward ran in (ADR-0008).
         loss = torch.nn.functional.cross_entropy(
@@ -181,6 +203,7 @@ def train(
     device: torch.device,
     resume: Path | None = None,
     stop_at: int | None = None,
+    precision: str | None = None,
     eval_batches: int | None = None,
     log_every: int = 10,
 ) -> list[dict]:
@@ -194,7 +217,7 @@ def train(
     this parameter exists to avoid.
     """
     torch.manual_seed(cfg.seed)
-    dtype, needs_scaler = pick_precision(device)
+    dtype, needs_scaler = pick_precision(device, precision)
 
     train_shards = ShardSet.open(tokens_dir, "train")
     val_shards = ShardSet.open(tokens_dir, "val")
@@ -246,7 +269,7 @@ def train(
             x = torch.from_numpy(x_np).to(device)
             y = torch.from_numpy(y_np).to(device)
             with torch.autocast(
-                device.type, dtype=dtype, enabled=device.type == "cuda"
+                device.type, dtype=dtype, enabled=dtype != torch.float32
             ):
                 logits = model(x)
             loss = torch.nn.functional.cross_entropy(
@@ -275,6 +298,10 @@ def train(
         }
         if device.type == "cuda":
             record["gpu_gb"] = round(torch.cuda.max_memory_allocated() / 1e9, 3)
+        if needs_scaler:
+            # A drop between records means the scaler skipped a step on an
+            # overflow and halved -- expected under fp16 (ADR-0008).
+            record["loss_scale"] = scaler.get_scale()
         records.append(record)
 
         if step % log_every == 0 or step == last - 1:
@@ -347,6 +374,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--micro-batch", type=int, help="override for this machine")
     parser.add_argument("--eval-batches", type=int, help="cap the held-out pass")
     parser.add_argument(
+        "--precision",
+        choices=PRECISIONS,
+        default="auto",
+        help="override ADR-0008's hardware-based choice; fp16 always gets a scaler",
+    )
+    parser.add_argument(
         "--stop-at",
         type=int,
         help="pause after this step without moving the schedule's horizon",
@@ -382,6 +415,7 @@ def main(argv: list[str] | None = None) -> int:
         device=torch.device(args.device),
         resume=args.resume,
         stop_at=args.stop_at,
+        precision=args.precision,
         eval_batches=4 if args.smoke else args.eval_batches,
     )
     return 0

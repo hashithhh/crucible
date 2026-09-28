@@ -175,3 +175,55 @@ def test_cpu_runs_in_fp32_without_a_scaler():
     dtype, needs_scaler = pick_precision(torch.device("cpu"))
     assert dtype is torch.float32
     assert needs_scaler is False
+
+
+def test_an_unknown_precision_is_refused():
+    with pytest.raises(ValueError, match="precision must be one of"):
+        pick_precision(torch.device("cpu"), "fp8")
+
+
+def test_reduced_precision_cannot_be_forced_onto_a_cpu():
+    """CPU autocast is not what ADR-0008 describes; refuse rather than pretend."""
+    for force in ("fp16", "bf16"):
+        with pytest.raises(ValueError, match="needs a CUDA device"):
+            pick_precision(torch.device("cpu"), force)
+
+
+def test_forcing_fp32_is_allowed_anywhere_and_never_scales():
+    assert pick_precision(torch.device("cpu"), "fp32") == (torch.float32, False)
+
+
+needs_cuda = pytest.mark.skipif(not torch.cuda.is_available(), reason="needs a GPU")
+
+
+@needs_cuda
+def test_forced_fp16_always_brings_its_scaler():
+    """fp16 without a scaler is the configuration that loses gradients."""
+    dtype, needs_scaler = pick_precision(torch.device("cuda"), "fp16")
+    assert dtype is torch.float16
+    assert needs_scaler is True
+
+
+@needs_cuda
+def test_the_t4_path_runs_end_to_end_with_a_live_scaler(tokens, small, tmp_path):
+    """The fp16 + GradScaler path a T4 takes, exercised on whatever GPU is here.
+
+    Before this test existed that path had never executed anywhere: every card
+    this project had seen supports bf16, so pick_precision never chose it.
+    """
+    cfg, model_cfg = small
+    records = train(
+        cfg,
+        model_cfg,
+        tokens_dir=tokens,
+        ckpt_dir=tmp_path / "ckpt",
+        log_path=tmp_path / "log.jsonl",
+        device=torch.device("cuda"),
+        precision="fp16",
+        log_every=1,
+    )
+    assert len(records) == STEPS
+    assert all(np.isfinite(r["loss"]) for r in records)
+    assert all(r["loss_scale"] > 0 for r in records), "the scaler must be live"
+    # Training moved the model: the last loss is below the first.
+    assert records[-1]["loss"] < records[0]["loss"]

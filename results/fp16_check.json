@@ -1,0 +1,65 @@
+{
+  "date": "2026-09-28",
+  "gpu": "NVIDIA GeForce RTX 4050 Laptop GPU",
+  "what": "S25, ADR-0008 config, first 100 steps from the same seed, bf16 vs forced fp16 + GradScaler",
+  "steps": 100,
+  "logged_steps_compared": 11,
+  "train_loss": {
+    "0": {
+      "bf16": 7.7672,
+      "fp16": 7.7671
+    },
+    "10": {
+      "bf16": 6.9956,
+      "fp16": 6.9955
+    },
+    "20": {
+      "bf16": 6.6354,
+      "fp16": 6.6353
+    },
+    "30": {
+      "bf16": 6.2979,
+      "fp16": 6.298
+    },
+    "40": {
+      "bf16": 5.8616,
+      "fp16": 5.861
+    },
+    "50": {
+      "bf16": 5.5159,
+      "fp16": 5.51
+    },
+    "60": {
+      "bf16": 5.173,
+      "fp16": 5.1777
+    },
+    "70": {
+      "bf16": 4.8319,
+      "fp16": 4.8345
+    },
+    "80": {
+      "bf16": 4.5525,
+      "fp16": 4.5449
+    },
+    "90": {
+      "bf16": 4.3151,
+      "fp16": 4.3086
+    },
+    "99": {
+      "bf16": 4.0784,
+      "fp16": 4.0738
+    }
+  },
+  "max_abs_diff": 0.0076,
+  "mean_abs_diff": 0.003,
+  "val_loss_20_batches": {
+    "bf16": 4.1335,
+    "fp16": 4.1279
+  },
+  "loss_scale": {
+    "first": 65536.0,
+    "last": 65536.0,
+    "drops": 0
+  },
+  "limits": "No overflow occurred, so the scaler never skipped a step or halved its scale: the overflow-recovery branch is unexercised at scale. Run on an Ada GPU, not a T4; T4 MFU is still owed."
+}

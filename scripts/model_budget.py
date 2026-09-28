@@ -10,6 +10,7 @@ the ADR's numbers regenerate.
 
 from __future__ import annotations
 
+import argparse
 import json
 import math
 import sys
@@ -128,8 +129,10 @@ def ts_tokens(bpt: float) -> float:
     return text / bpt + TS_TRAIN_BYTES * SEPARATORS_PER_BYTE
 
 
-def t4_hours(flops: float) -> dict[str, list[float]]:
-    lo, hi = MFU_BAND
+def t4_hours(
+    flops: float, band: tuple[float, float] = MFU_BAND
+) -> dict[str, list[float]]:
+    lo, hi = band
     fast = flops / (T4_PEAK_FLOPS * hi) / 3600
     slow = flops / (T4_PEAK_FLOPS * lo) / 3600
     return {
@@ -154,8 +157,23 @@ def option(cfg: Config, unique: float, seen: float, download: float) -> dict:
     }
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument(
+        "--t4-mfu",
+        type=float,
+        help="a MEASURED T4 MFU, as a fraction of the 65 TFLOP/s datasheet peak "
+        "(results/t4_check.json, mfu_vs_datasheet); replaces the assumed band",
+    )
+    args = parser.parse_args(argv)
+    band = MFU_BAND if args.t4_mfu is None else (args.t4_mfu, args.t4_mfu)
     out: dict = {"configs": {}, "options": {}}
+    if args.t4_mfu is not None:
+        out["t4_mfu"] = {
+            "value": args.t4_mfu,
+            "source": "measured on T4 (results/t4_check.json)",
+            "convention": "fraction of the 65 TFLOP/s datasheet peak",
+        }
     print("config        d   L   H        total       active  emb%  AdamW GB")
     for key, c in CONFIGS.items():
         p = c.params()
@@ -205,7 +223,7 @@ def main() -> int:
     )
     print()
     for key, o in opts.items():
-        o.update(t4_hours(o["flops"]))
+        o.update(t4_hours(o["flops"], band))
         o["tokens_per_param_unique"] = o["unique_tokens"] / o["params"]
         o["tokens_per_param_seen"] = o["tokens_seen"] / o["params"]
         o["weeks_of_kaggle_quota_1xT4"] = [
@@ -229,7 +247,7 @@ def main() -> int:
         f"-> {a['fwe_shards_to_download']} shards"
     )
     moe = option(CONFIGS["S25-MoE8"], ts_ts, ts_ts, TS_TRAIN_BYTES)
-    moe.update(t4_hours(moe["flops"]))
+    moe.update(t4_hours(moe["flops"], band))
     opts["phase4_S25_MoE8_run"] = moe
     print(f"Phase 4 S25-MoE8 run on TinyStories: 1xT4={moe['one_t4_hours']}h")
     out["options"] = opts
