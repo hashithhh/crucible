@@ -1,6 +1,6 @@
 # ADR-0009 — Phase 4 ablation protocol
 
-- **Status:** accepted
+- **Status:** accepted; amended 2026-09-28 (see below)
 - **Date:** 2026-09-28
 - **Applies to:** Phase 4 (CLAUDE.md). Base config is ADR-0008; model is S25
   (ADR-0006).
@@ -92,3 +92,14 @@ ablation.
   load-balancing loss with coefficient 0.01.
 - Gemma Team, *Gemma 2* (2024): alternating local sliding-window and global
   attention layers.
+
+## Amendment, 2026-09-28 — hybrid attention saved no compute
+
+The Variants section says hybrid attention has "the same parameters, less
+attention compute". The first half held; the second did not. The hybrid run
+ran at 43.6k tokens/s, the baseline's speed, because the window is applied as
+a mask over the full attention matrix: every score is still computed and the
+hidden ones are discarded. The saving is real only with a kernel that skips
+the masked blocks, which this project does not have. The ablation still
+answers its quality question (1.8484 vs 1.8552, marginal); it says nothing
+about efficiency. Results: `results/phase4_ablations.json`.

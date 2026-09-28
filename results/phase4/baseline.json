@@ -1,0 +1,42 @@
+{
+  "run": "baseline",
+  "val_loss": 1.8552,
+  "tokens_per_s": 43488,
+  "seconds_last_process": 1281.9,
+  "resumed": false,
+  "train_config": {
+    "context": 512,
+    "batch_size": 128,
+    "micro_batch": 16,
+    "steps": 820,
+    "peak_lr": 0.0006,
+    "min_lr": 6e-05,
+    "warmup_steps": 200,
+    "betas": [
+      0.9,
+      0.95
+    ],
+    "eps": 1e-08,
+    "weight_decay": 0.1,
+    "grad_clip": 1.0,
+    "seed": 1337,
+    "eval_every": 0,
+    "checkpoint_every": 410
+  },
+  "model_config": {
+    "vocab_size": 2049,
+    "d_model": 512,
+    "n_layers": 8,
+    "n_heads": 8,
+    "context": 512,
+    "d_ff": 2048,
+    "rope_theta": 10000.0,
+    "norm_eps": 1e-06,
+    "init_std": 0.02,
+    "tie_embeddings": true,
+    "n_experts": 1,
+    "moe_aux_coef": 0.01,
+    "window": 0
+  },
+  "date": "2026-09-28"
+}

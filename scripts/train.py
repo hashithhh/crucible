@@ -284,7 +284,8 @@ def train(
             aux = model.aux_loss()
             scaler.scale((loss + aux) / cfg.accumulation).backward()
             step_loss += loss.item() / cfg.accumulation
-            step_aux += float(aux) / cfg.accumulation
+            aux_value = aux.detach() if torch.is_tensor(aux) else aux
+            step_aux += float(aux_value) / cfg.accumulation
 
         # Unscale before clipping: clipping a scaled gradient would clip
         # against a threshold that moves with the scaler (ADR-0008).

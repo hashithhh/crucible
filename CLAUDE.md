@@ -172,20 +172,24 @@ metric is held-out loss at step 820 on the full val split. A difference
 smaller than the baseline's seed-to-seed gap is reported as **no difference**.
 That rule, fixed before the runs, is the pre-registration; no ledger entries.
 
-1. **4.0 ADR-0009** — the protocol above and each variant's constants.
-2. **4.1 Baseline, two seeds** — the reference and the noise floor.
-3. **4.2 Learning rate: 2e-4** vs 6e-4. ADR-0008 flagged 6e-4 as the risky
-   constant and ~2e-4 as the argued alternative; this answers it.
-4. **4.3 Warmup: none** vs 200 steps. Whether warmup matters at all here.
-5. **4.4 Dense vs MoE: 4 experts, top-1 routing**, compute-matched to dense
-   (26.2M active). Smallest MoE that answers the question and fits 6 GB.
-6. **4.5 Full vs hybrid attention:** alternate layers use sliding-window
-   attention (window 128). Same parameters, less attention compute.
-7. **4.6 Results** — one table (`results/phase4_ablations.json`) and a short
-   writeup. Tests only where new model code could silently be wrong: the
-   sliding-window mask and MoE routing.
+1. ~~**4.0 ADR-0009**~~ **done 2026-09-28**, committed before any run.
+2. ~~**4.1 Baseline, two seeds**~~ **done** — 1.8552 and 1.8585; noise
+   floor **0.0033**.
+3. ~~**4.2 Learning rate 2e-4**~~ **done** — 2.3268, +0.472, worse. ADR-0008's
+   6e-4 confirmed at this horizon.
+4. ~~**4.3 No warmup**~~ **done** — 2.0478, +0.193, worse.
+5. ~~**4.4 MoE, 4 experts top-1**~~ **done** — 1.7721, −0.083, better at equal
+   FLOPs per token, but 24% lower throughput (1.35× wall-clock). Routing
+   stayed balanced (aux 1.1-1.5× ideal).
+6. ~~**4.5 Hybrid attention**~~ **done** — 1.8484, −0.007: clears the noise
+   rule by 2× but reported as marginal. **No speed-up**: the mask-based
+   implementation computes full attention, contrary to ADR-0009's "less
+   attention compute" (amended there).
+7. ~~**4.6 Results**~~ **done** — `results/phase4_ablations.json`,
+   `results/phase4/`, `docs/phase4-writeup.md`; 12 tests on the new code.
 
-Budget: 6 runs, about 2-2.5 GPU-hours. **Not in Phase 4:** multiple seeds per
+Budget: 6 runs, 2.24 GPU-hours actual, none interrupted (run as a detached
+process after the session's memory reaper stopped every in-session attempt). **Not in Phase 4:** multiple seeds per
 variant, full-epoch confirmations, LR sweeps. Phase 5 is the scaling ladder.
 
 **Not in Phase 3:** the ablations and the scaling ladder — Phases 4 and 5,

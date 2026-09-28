@@ -22,7 +22,7 @@ says so; see `CLAUDE.md` for what that changes.
 | 1 | Byte-level BPE tokenizer, 2,048 merges | done — [writeup](docs/phase1-writeup.md) |
 | 2 | Transformer: RMSNorm, RoPE, KV cache, sampling | done; the from-memory rebuild check was withdrawn unrun |
 | 3 | Train S25 on TinyStories | trained — [writeup](docs/phase3-writeup.md) |
-| 4 | Ablations on S25: LR, warmup, MoE, hybrid attention | in progress |
+| 4 | Ablations on S25: LR, warmup, MoE, hybrid attention | done — [writeup](docs/phase4-writeup.md) |
 | 5 | Scaling ladder vs Chinchilla | — |
 
 Phase 3 result: one epoch, 6,561 steps, final held-out loss **1.3383
